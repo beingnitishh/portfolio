@@ -7,6 +7,7 @@ import React, { useState, useRef, useEffect } from "react";
 type Achievement = {
   text: string;
   metric?: string;
+  isSection?: boolean;
 };
 
 type ExperienceData = {
@@ -40,6 +41,19 @@ const EXP_DATA: ExperienceData[] = [
       { text: "End-to-end Flipkart ops, account health monitoring" },
       { text: "Simultaneous Flipkart + Meesho listings" },
       { text: "Dual-platform Excel records, Earn More Reports analysis" },
+      { text: "Social Media Mangement", isSection: true },
+      {
+        text: "Managed Instagram account for Ginoya Brothers as a dedicated social media handler, overseeing content strategy, publishing schedule, and community engagement to drive brand visibility and direct inbound sales.",
+      },
+      {
+        text: "Created and published diverse content formats, including static posts, Reels, and carousel creatives, maintaining a consistent posting cadence aligned with product launches, promotions, and audience engagement goals.",
+      },
+      {
+        text: "Handled all sales inquiries and leads generated through Instagram DMs and post interactions, converting social engagement into confirmed orders and maintaining a structured follow-up pipeline.",
+      },
+      {
+        text: "Grew the Ginoya Brothers Instagram following through targeted organic content and consistent engagement strategies, expanding the brand’s reach and contributing to measurable business growth.",
+      },
     ],
     stack: ["Flipkart Seller Central", "Meesho Seller Panel", "Microsoft Excel", "Keyword Bidding"],
   },
@@ -198,37 +212,59 @@ function ExperienceCard({
           {/* Achievements */}
           <div className="flex flex-col gap-3 mb-6">
             {data.achievements.map((ach, i) => (
-              <div
-                key={i}
-                className="flex items-start gap-3"
-                style={{
-                  opacity: isOpen ? 1 : 0,
-                  transform: isOpen ? "translateX(0)" : "translateX(-8px)",
-                  transition: `all 0.4s ease ${150 + i * 60}ms`,
-                }}
-              >
+              ach.isSection ? (
                 <div
-                  className="mt-[6px] h-[5px] w-[5px] flex-shrink-0 rounded-full"
-                  style={{ backgroundColor: "var(--card-accent)" }}
-                />
-                <div
-                  className="text-[12px] leading-relaxed text-[#bbb]"
-                  style={{ fontFamily: "'IBM Plex Mono', monospace" }}
+                  key={i}
+                  className="pt-2 pb-1 border-t border-[#333]"
+                  style={{
+                    opacity: isOpen ? 1 : 0,
+                    transform: isOpen ? "translateX(0)" : "translateX(-8px)",
+                    transition: `all 0.4s ease ${150 + i * 60}ms`,
+                  }}
                 >
-                  {ach.text}
-                  {ach.metric && (
-                    <span
-                      className="inline-block ml-2 rounded px-1.5 py-0.5 text-[11px] font-medium"
-                      style={{
-                        backgroundColor: "var(--card-accent-dim)",
-                        color: "var(--card-accent)",
-                      }}
-                    >
-                      {ach.metric}
-                    </span>
-                  )}
+                  <div
+                    className="text-[11px] uppercase tracking-[0.12em]"
+                    style={{
+                      fontFamily: "'IBM Plex Mono', monospace",
+                      color: "var(--card-accent)",
+                    }}
+                  >
+                    {ach.text}
+                  </div>
                 </div>
-              </div>
+              ) : (
+                <div
+                  key={i}
+                  className="flex items-start gap-3"
+                  style={{
+                    opacity: isOpen ? 1 : 0,
+                    transform: isOpen ? "translateX(0)" : "translateX(-8px)",
+                    transition: `all 0.4s ease ${150 + i * 60}ms`,
+                  }}
+                >
+                  <div
+                    className="mt-[6px] h-[5px] w-[5px] flex-shrink-0 rounded-full"
+                    style={{ backgroundColor: "var(--card-accent)" }}
+                  />
+                  <div
+                    className="text-[12px] leading-relaxed text-[#bbb]"
+                    style={{ fontFamily: "'IBM Plex Mono', monospace" }}
+                  >
+                    {ach.text}
+                    {ach.metric && (
+                      <span
+                        className="inline-block ml-2 rounded px-1.5 py-0.5 text-[11px] font-medium"
+                        style={{
+                          backgroundColor: "var(--card-accent-dim)",
+                          color: "var(--card-accent)",
+                        }}
+                      >
+                        {ach.metric}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              )
             ))}
           </div>
 
