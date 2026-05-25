@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 
 const inter = Inter({
@@ -7,6 +8,8 @@ const inter = Inter({
     variable: "--font-inter",
     display: "swap",
 });
+
+const googleTagId = process.env.NEXT_PUBLIC_GOOGLE_TAG_ID;
 
 export const metadata: Metadata = {
     title: "Nitish Kumar - E-Commerce & AI Tools Specialist",
@@ -40,6 +43,22 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="en" className={inter.variable}>
+            <head>
+                {googleTagId ? (
+                    <>
+                        <Script
+                            src={`https://www.googletagmanager.com/gtag/js?id=${googleTagId}`}
+                            strategy="afterInteractive"
+                        />
+                        <Script id="google-tag" strategy="afterInteractive">
+                            {`window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', '${googleTagId}');`}
+                        </Script>
+                    </>
+                ) : null}
+            </head>
             <body className="bg-surface font-sans antialiased">{children}</body>
         </html>
     );
