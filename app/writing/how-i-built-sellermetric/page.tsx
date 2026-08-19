@@ -18,6 +18,18 @@ export const metadata: Metadata = {
         url: CANONICAL,
         type: "article",
         publishedTime: PUBLISHED,
+        images: [
+            {
+                url: "/og.jpg",
+                width: 1376,
+                height: 768,
+                alt: "Nitish Kumar — E-Commerce Executive and AI Tools Specialist",
+            },
+        ],
+    },
+    twitter: {
+        card: "summary_large_image",
+        images: ["/og.jpg"],
     },
 };
 
