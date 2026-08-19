@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 
 const socials = [
     { label: "GitHub", href: "https://github.com/beingnitishh/" },
-    { label: "LinkedIn", href: "#" },
+    { label: "LinkedIn", href: "https://www.linkedin.com/in/nitish-kumar-3a6671246?utm_source=share_via&utm_content=profile&utm_medium=member_android" },
 ];
 
 export default function Footer() {
