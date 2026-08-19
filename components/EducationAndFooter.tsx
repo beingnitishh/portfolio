@@ -26,6 +26,7 @@ type CertificationData = {
   issuer: string;
   year: string;
   skills: string[];
+  credentialUrl?: string;
 };
 
 type ContactData = {
@@ -64,6 +65,17 @@ const EDU_DATA: EducationData[] = [
 ];
 
 const CERT_DATA: CertificationData[] = [
+  {
+    id: "google-ads-search",
+    title: "Google Ads Search Professional",
+    accent: "#4285F4",
+    tag: "PROFESSIONAL CERT",
+    verified: true,
+    issuer: "Google",
+    year: "2026",
+    skills: ["Search Campaigns", "Keyword Strategy", "Ad Quality & Bidding"],
+    credentialUrl: "https://skillshop.credential.net/88e4e44b-60cc-4734-a48d-cdd1e6377dd6#acc.NEn9Wx5p",
+  },
   {
     id: "oracle",
     title: "Oracle Generative AI Professional",
@@ -114,9 +126,17 @@ const CONTACT_DATA: ContactData[] = [
   {
     id: "live_project",
     label: "Live Project",
-    value: "sellermetrics.netlify.app",
-    href: "https://sellermetrics.netlify.app",
+    value: "sellermetric.vercel.app",
+    href: "https://sellermetric.vercel.app/",
     accent: "#3B82F6",
+    iconType: "link",
+  },
+  {
+    id: "github",
+    label: "GitHub",
+    value: "github.com/beingnitishh",
+    href: "https://github.com/beingnitishh/",
+    accent: "#F5F5F5",
     iconType: "link",
   },
 ];
@@ -266,8 +286,18 @@ function EduCard({ data, inView, index }: { data: EducationData; inView: boolean
 }
 
 function CertCard({ data, inView, index }: { data: CertificationData; inView: boolean; index: number }) {
+  const Wrapper = data.credentialUrl ? "a" : "div";
+  const linkProps = data.credentialUrl
+    ? {
+        href: data.credentialUrl,
+        target: "_blank",
+        rel: "noopener noreferrer",
+      }
+    : {};
+
   return (
-    <div
+    <Wrapper
+      {...linkProps}
       className="bento-base group relative flex flex-col w-full h-full overflow-hidden"
       style={{
         "--card-accent": data.accent,
@@ -306,7 +336,7 @@ function CertCard({ data, inView, index }: { data: CertificationData; inView: bo
 
       {/* Content */}
       <h3
-        className="text-[17px] text-[#eee] mb-2 leading-tight pr-4"
+        className="text-[16px] sm:text-[17px] text-[#eee] mb-2 leading-tight pr-2 break-words"
         style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800 }}
       >
         {data.title}
@@ -334,7 +364,7 @@ function CertCard({ data, inView, index }: { data: CertificationData; inView: bo
           </div>
         ))}
       </div>
-    </div>
+    </Wrapper>
   );
 }
 
@@ -342,8 +372,8 @@ function ContactCard({ data, inView, index }: { data: ContactData; inView: boole
   return (
     <a
       href={data.href}
-      target={data.id === "live_project" || data.id === "location" ? "_blank" : undefined}
-      rel={data.id === "live_project" || data.id === "location" ? "noopener noreferrer" : undefined}
+      target={data.id === "email" || data.id === "phone" ? undefined : "_blank"}
+      rel={data.id === "email" || data.id === "phone" ? undefined : "noopener noreferrer"}
       className="contact-card relative flex flex-col h-full overflow-hidden p-[18px]"
       style={{
         "--card-accent": data.accent,
@@ -375,7 +405,7 @@ function ContactCard({ data, inView, index }: { data: ContactData; inView: boole
         {data.label}
       </div>
       <div
-        className="contact-value text-[12px] text-[#aaa] transition-colors duration-300 overflow-hidden text-ellipsis whitespace-nowrap w-[90%]"
+        className="contact-value text-[12px] text-[#aaa] transition-colors duration-300 overflow-hidden text-ellipsis whitespace-nowrap w-full pr-6"
         style={{ fontFamily: "'IBM Plex Mono', monospace" }}
       >
         {data.value}
@@ -429,7 +459,6 @@ export default function EducationAndFooter() {
     
     .bento-base:hover {
       border-color: var(--card-accent) !important;
-      opacity: var(--hover-border-opacity, 0.55);
     }
     
     /* Contact specific overrides to match exact prompt */
@@ -531,27 +560,25 @@ export default function EducationAndFooter() {
                 className="text-4xl sm:text-5xl md:text-6xl text-white"
                 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800 }}
               >
-                Education & <span className="text-[#F59E0B]">Certifications</span>
+                Education & <span className="text-[#F59E0B] block sm:inline">Certifications</span>
               </h2>
               <div
                 className="text-right text-[12px] text-[#666]"
                 style={{ fontFamily: "'IBM Plex Mono', monospace" }}
               >
-                2 certifications · CBSE
+                3 certifications · CBSE
               </div>
             </div>
           </div>
 
           {/* Combined 4-Column Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 min-[1100px]:grid-cols-4 gap-[14px]">
-            {/* 2 Education Cards */}
             {EDU_DATA.map((edu, i) => (
               <div key={edu.id} className="min-h-[260px] flex">
                 <EduCard data={edu} inView={eduInView} index={i} />
               </div>
             ))}
 
-            {/* 2 Certification Cards */}
             {CERT_DATA.map((cert, i) => (
               <div key={cert.id} className="min-h-[260px] flex">
                 <CertCard data={cert} inView={eduInView} index={i + EDU_DATA.length} />

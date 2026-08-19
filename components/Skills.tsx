@@ -190,7 +190,7 @@ const STATS = [
   { value: "7", label: "Domains" },
   { value: "1.5+", label: "Years Exp." },
   { value: "3", label: "Live Projects" },
-  { value: "2", label: "Certifications" },
+  { value: "3", label: "Certifications" },
 ];
 
 function MetricBlock({
@@ -324,11 +324,12 @@ export default function Skills() {
             className="text-4xl sm:text-5xl md:text-6xl text-white mb-8"
             style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800 }}
           >
-            Skills & <span style={{ color: "#FF5500" }}>Expertise</span>
+            Skills &{" "}
+            <span style={{ color: "#FF5500" }}>Expertise</span>
           </h2>
 
           <div
-            className="inline-flex items-center gap-3 rounded-full border px-4 py-2"
+            className="inline-flex max-w-full items-center gap-2 sm:gap-3 rounded-full border px-3 sm:px-4 py-2"
             style={{
               borderColor: "#A855F7",
               backgroundColor: hexToRgba("#A855F7", 0.1),
@@ -337,7 +338,7 @@ export default function Skills() {
           >
             <div className="h-2 w-2 flex-shrink-0 rounded-full oracle-dot bg-[#A855F7]" />
             <span
-              className="text-[11px] sm:text-xs font-medium uppercase tracking-wider"
+              className="text-[10px] sm:text-xs font-medium uppercase tracking-wider leading-snug"
               style={{ fontFamily: "'IBM Plex Mono', monospace" }}
             >
               Oracle Generative AI Professional · 2026
@@ -482,9 +483,9 @@ export default function Skills() {
         >
           {STATS.map((stat, i) => (
             <React.Fragment key={stat.label}>
-              <div className="flex flex-col items-center text-center w-1/2 sm:w-1/3 lg:w-auto">
+              <div className="flex flex-col items-center text-center w-1/2 min-[480px]:w-1/3 lg:w-auto min-w-0 px-2">
                 <div
-                  className="text-4xl text-white mb-2"
+                  className="text-3xl sm:text-4xl text-white mb-2"
                   style={{
                     fontFamily: "'Syne', sans-serif",
                     fontWeight: 800,
