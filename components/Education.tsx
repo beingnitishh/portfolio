@@ -14,6 +14,16 @@ interface EducationItem {
 
 const items: EducationItem[] = [
     {
+        id: 0,
+        title: "Google Ads Search Professional Certification",
+        institution: "Google",
+        period: "2026",
+        details:
+            "Certified in Google Ads Search. Credential ID 190404988 · Valid through August 2, 2027.",
+        type: "certification",
+        icon: "🏅",
+    },
+    {
         id: 1,
         title: "Oracle Generative AI Professional",
         institution: "Oracle",

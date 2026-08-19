@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import React, { useState, useRef, useEffect } from "react";
 
 type ProjectData = {
@@ -7,6 +8,7 @@ type ProjectData = {
   accent: string;
   badge: string;
   url: string;
+  internal?: boolean;
   title: string;
   desc: string;
   highlights: string[];
@@ -18,7 +20,8 @@ const PROJ_DATA: ProjectData[] = [
     id: "sellermetric",
     accent: "#3B82F6",
     badge: "LIVE",
-    url: "https://sellermetrics.netlify.app",
+    url: "/projects/sellermetric",
+    internal: true,
     title: "SellerMetric",
     desc: "Web analytics platform for Flipkart sellers",
     highlights: [
@@ -47,7 +50,8 @@ const PROJ_DATA: ProjectData[] = [
     id: "warranty",
     accent: "#10B981",
     badge: "DEPLOYED",
-    url: "",
+    url: "/projects/star-work-warranty",
+    internal: true,
     title: "Star Work Warranty Portal",
     desc: "Branded warranty registration with dual-backend architecture",
     highlights: [
@@ -61,7 +65,8 @@ const PROJ_DATA: ProjectData[] = [
     id: "meesho",
     accent: "#F59E0B",
     badge: "TOOL",
-    url: "",
+    url: "/projects/meesho-label-sorter",
+    internal: true,
     title: "Meesho Label Sorter Pro",
     desc: "Shipping label parser eliminating manual courier sorting",
     highlights: [
@@ -109,15 +114,15 @@ function ProjectCard({
         </div>
 
         {data.url && (
-          <a
+          <Link
             href={data.url}
-            target="_blank"
-            rel="noopener noreferrer"
+            target={data.internal ? undefined : "_blank"}
+            rel={data.internal ? undefined : "noopener noreferrer"}
             className="flex items-center gap-1 text-[10px] uppercase font-medium text-[#888] hover:text-[var(--card-accent)] transition-colors opacity-65 hover:opacity-100"
             style={{ fontFamily: "'IBM Plex Mono', monospace" }}
           >
-            ↗ Visit
-          </a>
+            {data.internal ? "Case study →" : "↗ Visit"}
+          </Link>
         )}
       </div>
 
@@ -259,13 +264,13 @@ export default function Projects() {
                 Projects
               </h2>
               <a
-                href="https://sellermetrics.netlify.app"
+                href="https://sellermetric.vercel.app/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-right text-[12px] text-[#3B82F6] hover:underline"
+                className="text-left sm:text-right text-[12px] text-[#3B82F6] hover:underline break-all"
                 style={{ fontFamily: "'IBM Plex Mono', monospace" }}
               >
-                ↗ sellermetric.netlify.app
+                ↗ sellermetric.vercel.app
               </a>
             </div>
           </div>

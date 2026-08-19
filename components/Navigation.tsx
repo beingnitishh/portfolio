@@ -51,6 +51,7 @@ export default function Navigation({ isVisible = true }: { isVisible?: boolean }
   const [igCardHovered, setIgCardHovered] = useState(false);
 
   const panelRef = useRef<HTMLDivElement>(null);
+  const hamburgerRef = useRef<HTMLButtonElement>(null);
 
   // ── Scroll handler ────────────────────────────────────────────────────────
   useEffect(() => {
@@ -81,51 +82,47 @@ export default function Navigation({ isVisible = true }: { isVisible?: boolean }
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // ── Body overflow lock (iOS-safe) ────────────────────────────────────────
+  // Lock page scroll without changing position (fixed body jumps to the hero)
   useEffect(() => {
-    if (menuOpen) {
-      const scrollY = window.scrollY;
-      document.body.style.position = "fixed";
-      document.body.style.top = `-${scrollY}px`;
-      document.body.style.width = "100%";
-      document.body.style.overflow = "hidden";
-    } else {
-      const scrollY = document.body.style.top;
-      document.body.style.position = "";
-      document.body.style.top = "";
-      document.body.style.width = "";
-      document.body.style.overflow = "";
-      if (scrollY) window.scrollTo(0, parseInt(scrollY) * -1);
-    }
+    if (!menuOpen) return;
+    const html = document.documentElement;
+    const prevHtml = html.style.overflow;
+    const prevBody = document.body.style.overflow;
+    html.style.overflow = "hidden";
+    document.body.style.overflow = "hidden";
     return () => {
-      document.body.style.position = "";
-      document.body.style.top = "";
-      document.body.style.width = "";
-      document.body.style.overflow = "";
+      html.style.overflow = prevHtml;
+      document.body.style.overflow = prevBody;
     };
   }, [menuOpen]);
 
-  // ── Click-outside to close panel ─────────────────────────────────────────
-  useEffect(() => {
-    if (!menuOpen) return;
-    const onMouseDown = (e: MouseEvent) => {
-      if (panelRef.current && !panelRef.current.contains(e.target as Node)) {
-        setMenuOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", onMouseDown);
-    return () => document.removeEventListener("mousedown", onMouseDown);
-  }, [menuOpen]);
+  // Backdrop + panel X close the menu. A document listener raced the hamburger.
 
   // ── Smooth scroll helper ──────────────────────────────────────────────────
   const handleScrollTo = (id: string) => {
     setMenuOpen(false);
-    setTimeout(() => {
+    window.setTimeout(() => {
       document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
-    }, 50);
+    }, 80);
+  };
+
+  const closeMenu = (e?: React.MouseEvent | React.TouchEvent) => {
+    e?.preventDefault();
+    e?.stopPropagation();
+    setMenuOpen(false);
+  };
+
+  const openMenu = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setMenuOpen(true);
   };
 
   const handleLogoClick = () => {
+    if (menuOpen) {
+      setMenuOpen(false);
+      return;
+    }
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -216,6 +213,7 @@ export default function Navigation({ isVisible = true }: { isVisible?: boolean }
           alignItems: "center",
           justifyContent: "space-between",
           padding: "0 16px",
+          paddingTop: "env(safe-area-inset-top)",
           background: scrolled ? "rgba(8,8,8,0.85)" : "transparent",
           backdropFilter: scrolled ? "blur(16px)" : "none",
           WebkitBackdropFilter: scrolled ? "blur(16px)" : "none",
@@ -317,19 +315,24 @@ export default function Navigation({ isVisible = true }: { isVisible?: boolean }
 
         {/* ── Mobile Hamburger (< 768px) ────────────────────────────────── */}
         <button
-          onClick={() => setMenuOpen(true)}
+          ref={hamburgerRef}
+          type="button"
+          onClick={openMenu}
           aria-label="Open menu"
-          className="hamburger-btn"
+          aria-expanded={menuOpen}
+          className={`hamburger-btn${menuOpen ? " is-hidden" : ""}`}
           style={{
             background: "transparent",
             border: "none",
             padding: 0,
             cursor: "pointer",
-            display: "flex",
             flexDirection: "column",
             gap: "5px",
             alignItems: "center",
             justifyContent: "center",
+            width: "32px",
+            height: "32px",
+            pointerEvents: menuOpen ? "none" : "auto",
           }}
         >
           <span style={{ display: "block", width: "22px", height: "1.5px", background: "rgba(255,255,255,0.7)", borderRadius: "2px" }} />
@@ -343,7 +346,7 @@ export default function Navigation({ isVisible = true }: { isVisible?: boolean }
       ════════════════════════════════════════════════════════════════════ */}
       {/* Backdrop overlay */}
       <div
-        onClick={() => setMenuOpen(false)}
+        onClick={closeMenu}
         style={{
           position: "fixed",
           inset: 0,
@@ -403,8 +406,9 @@ export default function Navigation({ isVisible = true }: { isVisible?: boolean }
             Menu
           </span>
           <button
+            type="button"
             className="close-btn"
-            onClick={() => setMenuOpen(false)}
+            onClick={closeMenu}
             aria-label="Close menu"
             style={{
               width: "32px",
@@ -594,9 +598,16 @@ export default function Navigation({ isVisible = true }: { isVisible?: boolean }
         .desktop-nav { display: flex; }
         .hamburger-btn { display: none; }
 
-        @media (max-width: 767px) {
+        @media (max-width: 899px) {
           .desktop-nav { display: none !important; }
           .hamburger-btn { display: flex !important; }
+          .hamburger-btn.is-hidden { display: none !important; }
+        }
+
+        @media (max-width: 380px) {
+          header button span:last-child {
+            font-size: 15px !important;
+          }
         }
       `}</style>
     </>

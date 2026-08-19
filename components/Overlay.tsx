@@ -41,21 +41,23 @@ export default function Overlay() {
             {/* Section 1 — Center */}
             <motion.div
                 style={{ opacity: opacity1, y: y1, scale: scale1 }}
-                className="sticky top-0 flex h-screen w-full items-center justify-center px-6"
+                className="sticky top-0 flex h-screen w-full items-center justify-center px-4 sm:px-6"
             >
-                <div className="text-center">
+                <div className="text-center max-w-[min(100%,40rem)]">
                     <motion.p
-                        className="mb-3 text-sm font-medium uppercase tracking-[0.3em] text-brand/80 md:text-base"
+                        className="mb-3 text-xs sm:text-sm font-medium uppercase tracking-[0.25em] sm:tracking-[0.3em] text-brand/80 md:text-base"
                     >
                         Hello, I&apos;m
                     </motion.p>
-                    <h1 className="text-4xl sm:text-5xl font-bold leading-tight tracking-tight text-white md:text-7xl lg:text-8xl">
+                    <h1 className="text-[clamp(2.1rem,10vw,6.5rem)] font-bold leading-[1.05] tracking-tight text-white">
                         <span className="text-gradient">Nitish</span>
                         <br />
                         Kumar<span className="text-brand">.</span>
                     </h1>
-                    <p className="mt-6 text-base font-light text-white/50 md:text-lg">
-                        E-Commerce Executive &nbsp;|&nbsp; AI Tools Specialist
+                    <p className="mt-5 sm:mt-6 text-sm sm:text-base font-light text-white/50 md:text-lg px-1">
+                        <span className="block sm:inline">E-Commerce Executive</span>
+                        <span className="hidden sm:inline">&nbsp;|&nbsp;</span>
+                        <span className="block sm:inline mt-1 sm:mt-0">AI Tools Specialist</span>
                     </p>
                 </div>
             </motion.div>
@@ -63,17 +65,17 @@ export default function Overlay() {
             {/* Section 2 — Left */}
             <motion.div
                 style={{ opacity: opacity2, y: y2, x: x2 }}
-                className="sticky top-0 flex h-screen w-full items-center px-5 sm:px-8 md:px-16 lg:px-24"
+                className="sticky top-0 flex h-[100dvh] min-h-[100svh] w-full items-center px-4 sm:px-8 md:px-16 lg:px-24"
             >
-                <div className="max-w-2xl">
+                <div className="max-w-2xl w-full">
                     <div className="mb-4 h-px w-16 bg-brand/50" />
-                    <h2 className="text-4xl font-bold leading-tight text-white md:text-5xl lg:text-6xl">
+                    <h2 className="text-[clamp(1.75rem,7vw,3.75rem)] font-bold leading-tight text-white">
                         I drive
                         <br />
                         <span className="text-gradient">e-commerce growth</span>
                         <span className="text-brand">.</span>
                     </h2>
-                    <p className="mt-6 max-w-md text-base font-light leading-relaxed text-white/40 md:text-lg">
+                    <p className="mt-4 sm:mt-6 max-w-md text-sm sm:text-base font-light leading-relaxed text-white/40 md:text-lg">
                         1.5+ years managing multi-platform marketplace operations across Shopify, Flipkart &amp; Meesho — achieving 20x ROI on ad spend.
                     </p>
                 </div>
@@ -82,17 +84,17 @@ export default function Overlay() {
             {/* Section 3 — Right */}
             <motion.div
                 style={{ opacity: opacity3, y: y3, x: x3 }}
-                className="sticky top-0 flex h-screen w-full items-center justify-end px-5 sm:px-8 md:px-16 lg:px-24"
+                className="sticky top-0 flex h-screen w-full items-center justify-start md:justify-end px-4 sm:px-8 md:px-16 lg:px-24"
             >
-                <div className="max-w-2xl text-right">
-                    <div className="mb-4 ml-auto h-px w-16 bg-brand/50" />
-                    <h2 className="text-4xl font-bold leading-tight text-white md:text-5xl lg:text-6xl">
+                <div className="max-w-2xl w-full text-left md:text-right">
+                    <div className="mb-4 h-px w-16 bg-brand/50 md:ml-auto" />
+                    <h2 className="text-[clamp(1.75rem,7vw,3.75rem)] font-bold leading-tight text-white">
                         Powered by
                         <br />
                         <span className="text-gradient">AI &amp; data</span>
                         <span className="text-brand">.</span>
                     </h2>
-                    <p className="mt-6 ml-auto max-w-md text-base font-light leading-relaxed text-white/40 md:text-lg">
+                    <p className="mt-4 sm:mt-6 md:ml-auto max-w-md text-sm sm:text-base font-light leading-relaxed text-white/40 md:text-lg">
                         Oracle Certified AI Professional — building data-driven tools that optimize performance, cut costs, and accelerate content production by 60%.
                     </p>
                 </div>

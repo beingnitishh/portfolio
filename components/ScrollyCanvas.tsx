@@ -60,28 +60,31 @@ export default function ScrollyCanvas({ onLoaded }: { onLoaded?: () => void }) {
         ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
     }, []);
 
-    // Preload all images
+    // Preload all images (first frame only when the user prefers reduced motion)
     useEffect(() => {
         let aborted = false;
         const images: HTMLImageElement[] = [];
         let loaded = 0;
+        const reduceMotion =
+            typeof window !== "undefined" &&
+            window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        const framesToLoad = reduceMotion ? 1 : TOTAL_FRAMES;
 
-        for (let i = 0; i < TOTAL_FRAMES; i++) {
+        for (let i = 0; i < framesToLoad; i++) {
             const img = new Image();
             img.src = getFramePath(i);
             img.onload = () => {
                 loaded++;
-                if (loaded === TOTAL_FRAMES && !aborted) {
+                if (loaded === framesToLoad && !aborted) {
                     imagesRef.current = images;
                     setImagesLoaded(true);
                     onLoaded?.();
-                    // Draw first frame
                     drawFrame(0);
                 }
             };
             img.onerror = () => {
                 loaded++;
-                if (loaded === TOTAL_FRAMES && !aborted) {
+                if (loaded === framesToLoad && !aborted) {
                     imagesRef.current = images;
                     setImagesLoaded(true);
                     onLoaded?.();
@@ -142,6 +145,8 @@ export default function ScrollyCanvas({ onLoaded }: { onLoaded?: () => void }) {
                     ref={canvasRef}
                     className="absolute inset-0 h-full w-full"
                     style={{ background: "#121212", touchAction: "pan-y" }}
+                    aria-hidden="true"
+                    role="presentation"
                 />
             </div>
         </div>

@@ -127,7 +127,7 @@ function ExperienceCard({
 
       {/* Header (Clickable) */}
       <div
-        className="flex items-start justify-between cursor-pointer px-[22px] py-[18px]"
+        className="flex items-start justify-between cursor-pointer px-4 sm:px-[22px] py-4 sm:py-[18px] gap-3"
         role="button"
         tabIndex={0}
         aria-expanded={isOpen}
@@ -139,7 +139,7 @@ function ExperienceCard({
           }
         }}
       >
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2 min-w-0 flex-1">
           {/* Badge & Period row */}
           <div className="flex flex-wrap items-center gap-2">
             <div
@@ -177,7 +177,7 @@ function ExperienceCard({
 
         {/* Toggle Button */}
         <div
-          className="flex h-[26px] w-[26px] items-center justify-center rounded-full transition-transform duration-300"
+          className="flex h-[26px] w-[26px] shrink-0 items-center justify-center rounded-full transition-transform duration-300"
           style={{
             backgroundColor: "var(--card-accent-dim)",
             color: "var(--card-accent)",
@@ -197,7 +197,7 @@ function ExperienceCard({
           maxHeight: isOpen ? `${contentRef.current?.scrollHeight || 800}px` : "0px",
         }}
       >
-        <div ref={contentRef} className="px-[22px] pb-[18px] pt-1">
+        <div ref={contentRef} className="px-4 sm:px-[22px] pb-[18px] pt-1">
           {/* Headline */}
           <div
             className="pl-3 py-0.5 mb-5 text-[12px] text-[#aaa] border-l-[2px]"
@@ -374,7 +374,7 @@ export default function Experience() {
   `;
 
   return (
-    <section className="w-full flex justify-center bg-[#080808] py-16 md:py-24 px-4 md:px-6">
+    <section id="experience" className="w-full flex justify-center bg-[#080808] py-16 md:py-24 px-4 md:px-6">
       <style dangerouslySetInnerHTML={{ __html: globals }} />
       <div className="w-full max-w-[1200px] flex flex-col gap-24 md:gap-32">
         {/* BLOCK 1: EXPERIENCE */}
@@ -399,7 +399,7 @@ export default function Experience() {
                 Experience
               </h2>
               <div
-                className="text-right text-[12px] text-[#666]"
+                className="text-left sm:text-right text-[12px] text-[#666]"
                 style={{ fontFamily: "'IBM Plex Mono', monospace" }}
               >
                 2+ years · 3 companies
@@ -408,9 +408,9 @@ export default function Experience() {
           </div>
 
           {/* Timeline + Accordions Wrapper */}
-          <div className="flex flex-row w-full gap-3 sm:gap-6 lg:gap-8">
+          <div className="flex flex-row w-full min-w-0 gap-2 sm:gap-6 lg:gap-8">
             {/* Timeline Spine */}
-            <div className="flex flex-col items-center pt-[24px]">
+            <div className="hidden min-[380px]:flex flex-col items-center pt-[24px] shrink-0">
               {EXP_DATA.map((exp, i) => (
                 <React.Fragment key={exp.id}>
                   <div
@@ -433,7 +433,7 @@ export default function Experience() {
             </div>
 
             {/* Accordion Cards */}
-            <div className="flex flex-col flex-1 gap-[12px]">
+            <div className="flex flex-col flex-1 min-w-0 gap-[12px]">
               {EXP_DATA.map((exp, i) => (
                 <ExperienceCard
                   key={exp.id}
