@@ -1,4 +1,4 @@
-import { GITHUB_URL, INSTAGRAM_URL, JOB_TITLE, SITE_NAME, SITE_URL } from "@/lib/site";
+import { GITHUB_URL, INSTAGRAM_URL, JOB_TITLE, LINKEDIN_URL, SITE_NAME, SITE_URL } from "@/lib/site";
 
 const graph = {
     "@context": "https://schema.org",
@@ -13,7 +13,7 @@ const graph = {
             description:
                 "E-Commerce Executive with 1.5+ years managing multi-platform marketplace operations across Shopify, Flipkart, and Meesho. Google Ads Search Professional and Oracle Generative AI Professional.",
             email: "mailto:beingnitishh@gmail.com",
-            sameAs: [GITHUB_URL, INSTAGRAM_URL],
+            sameAs: [GITHUB_URL, LINKEDIN_URL, INSTAGRAM_URL],
             knowsAbout: [
                 "E-commerce",
                 "E-commerce Operations",
