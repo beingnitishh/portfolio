@@ -7,6 +7,7 @@ import "./globals.css";
 const TITLE = "Nitish Kumar - E-Commerce & AI Tools Specialist";
 const DESCRIPTION =
     "E-Commerce Executive with 1.5+ years managing multi-platform marketplace operations across Shopify, Flipkart, and Meesho. Certified Oracle Generative AI Professional.";
+const OG_IMAGE = `${SITE_URL}/og.jpg`;
 
 const inter = Inter({
     subsets: ["latin"],
@@ -90,7 +91,7 @@ export const metadata: Metadata = {
         description: DESCRIPTION,
         images: [
             {
-                url: "/og.jpg",
+                url: OG_IMAGE,
                 width: 1376,
                 height: 768,
                 alt: "Nitish Kumar — E-Commerce Executive and AI Tools Specialist",
@@ -101,7 +102,7 @@ export const metadata: Metadata = {
         card: "summary_large_image",
         title: TITLE,
         description: DESCRIPTION,
-        images: ["/og.jpg"],
+        images: [OG_IMAGE],
     },
     other: {
         "geo.region": "IN-GJ",
