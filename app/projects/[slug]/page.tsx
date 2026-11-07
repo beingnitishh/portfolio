@@ -17,7 +17,7 @@ export async function generateMetadata({
     const project = getProject(slug);
     if (!project) return {};
     const url = `${SITE_URL}/projects/${project.slug}`;
-    const ogImage = `${SITE_URL}/og.jpg`;
+    const ogImage = "/og.jpg?v=2";
     return {
         title: project.title,
         description: project.summary,
@@ -30,9 +30,9 @@ export async function generateMetadata({
             images: [
                 {
                     url: ogImage,
-                    width: 1376,
-                    height: 768,
-                    alt: "Nitish Kumar — E-Commerce Executive and AI Tools Specialist",
+                    width: 1200,
+                    height: 630,
+                    alt: "Nitish Kumar, E-Commerce Executive and AI Tools Specialist",
                 },
             ],
         },

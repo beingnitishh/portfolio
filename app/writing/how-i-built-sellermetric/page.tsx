@@ -7,7 +7,7 @@ const DESCRIPTION =
     "Nitish Kumar on building a browser-only Flipkart Earn More Report analyzer — the problem, the architecture, and what stayed out of the backend.";
 const CANONICAL = `${SITE_URL}/writing/how-i-built-sellermetric`;
 const PUBLISHED = "2026-08-19";
-const OG_IMAGE = `${SITE_URL}/og.jpg`;
+const OG_IMAGE = "/og.jpg?v=2";
 
 export const metadata: Metadata = {
     title: TITLE,
@@ -22,9 +22,9 @@ export const metadata: Metadata = {
         images: [
             {
                 url: OG_IMAGE,
-                width: 1376,
-                height: 768,
-                alt: "Nitish Kumar — E-Commerce Executive and AI Tools Specialist",
+                width: 1200,
+                height: 630,
+                alt: "Nitish Kumar, E-Commerce Executive and AI Tools Specialist",
             },
         ],
     },

@@ -9,7 +9,7 @@ import "./globals.css";
 const TITLE = "Nitish Kumar - E-Commerce & AI Tools Specialist";
 const DESCRIPTION =
     "E-Commerce Executive with 1.5+ years managing multi-platform marketplace operations across Shopify, Flipkart, and Meesho. Certified Oracle Generative AI Professional.";
-const OG_IMAGE = `${SITE_URL}/og.jpg`;
+const OG_IMAGE = "/og.jpg?v=2";
 
 const inter = Inter({
     subsets: ["latin"],
@@ -40,7 +40,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-    metadataBase: new URL(SITE_URL),
+    metadataBase: new URL("https://beingnitish.me"),
     title: {
         default: TITLE,
         template: "%s | Nitish Kumar",
@@ -94,9 +94,9 @@ export const metadata: Metadata = {
         images: [
             {
                 url: OG_IMAGE,
-                width: 1376,
-                height: 768,
-                alt: "Nitish Kumar — E-Commerce Executive and AI Tools Specialist",
+                width: 1200,
+                height: 630,
+                alt: "Nitish Kumar, E-Commerce Executive and AI Tools Specialist",
             },
         ],
     },
