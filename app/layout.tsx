@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { IBM_Plex_Mono, Inter, Syne } from "next/font/google";
+import Script from "next/script";
 import JsonLd from "@/components/JsonLd";
 import { SITE_NAME, SITE_URL } from "@/lib/site";
 import "./globals.css";
@@ -118,6 +119,18 @@ export default function RootLayout({
     return (
         <html lang="en" className={inter.variable}>
             <body className="bg-surface font-sans antialiased">
+                <Script
+                    src="https://www.googletagmanager.com/gtag/js?id=G-EERF19N4J7"
+                    strategy="afterInteractive"
+                />
+                <Script id="google-tag" strategy="afterInteractive">
+                    {`
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-EERF19N4J7');
+  `}
+                </Script>
                 <JsonLd />
                 {children}
             </body>
