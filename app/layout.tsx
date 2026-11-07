@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { IBM_Plex_Mono, Inter, Syne } from "next/font/google";
 import Script from "next/script";
+import ConsentBanner from "@/components/ConsentBanner";
 import JsonLd from "@/components/JsonLd";
 import { SITE_NAME, SITE_URL } from "@/lib/site";
 import "./globals.css";
@@ -127,11 +128,25 @@ export default function RootLayout({
                     {`
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
+
+    gtag('consent','default',{ad_storage:'granted',ad_user_data:'granted',ad_personalization:'granted',analytics_storage:'granted'});
+    gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied',analytics_storage:'denied',wait_for_update:500,region:['AT','BE','BG','HR','CY','CZ','DK','EE','FI','FR','DE','GR','HU','IS','IE','IT','LV','LI','LT','LU','MT','NL','NO','PL','PT','RO','SK','SI','ES','SE','GB','CH']});
+
+    try {
+      var consentChoice = localStorage.getItem('consent_choice');
+      if (consentChoice === 'granted') {
+        gtag('consent','update',{ad_storage:'granted',ad_user_data:'granted',ad_personalization:'granted',analytics_storage:'granted'});
+      } else if (consentChoice === 'denied') {
+        gtag('consent','update',{ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied',analytics_storage:'denied'});
+      }
+    } catch {}
+
     gtag('js', new Date());
-    gtag('config', 'G-EERF19N4J7');
+    gtag('config','G-EERF19N4J7');
   `}
                 </Script>
                 <JsonLd />
+                <ConsentBanner />
                 {children}
             </body>
         </html>

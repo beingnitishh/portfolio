@@ -437,11 +437,16 @@ function ContactCard({ data, inView, index }: { data: ContactData; inView: boole
 export default function EducationAndFooter() {
   const [eduInView, setEduInView] = useState(false);
   const [footerInView, setFooterInView] = useState(false);
+  const [showCookieSettings, setShowCookieSettings] = useState(false);
 
   const eduRef = useRef<HTMLDivElement>(null);
   const footerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    setShowCookieSettings(
+      document.cookie.split(";").some((cookie) => cookie.trim() === "eea=1"),
+    );
+
     const observerOptions = { threshold: 0.1 };
 
     const eduObserver = new IntersectionObserver(([entry]) => {
@@ -689,6 +694,24 @@ export default function EducationAndFooter() {
             >
               © 2026 Nitish Kumar · Built with Next.js, Framer Motion & Tailwind CSS
             </div>
+
+            {showCookieSettings && (
+              <button
+                type="button"
+                onClick={() => {
+                  try {
+                    window.localStorage.removeItem("consent_choice");
+                  } catch {
+                    // The banner can still be reopened when storage is unavailable.
+                  }
+                  window.dispatchEvent(new Event("open-consent"));
+                }}
+                className="cursor-pointer text-[11px] text-[#fff] opacity-50 transition-colors hover:text-[#FF5500] hover:opacity-100 hover:underline focus-visible:outline-none focus-visible:underline underline-offset-4"
+                style={{ fontFamily: "'IBM Plex Mono', monospace" }}
+              >
+                Cookie settings
+              </button>
+            )}
 
             <div
               className="flex items-center gap-[6px] text-[11px] text-[#fff] opacity-40 text-center sm:text-right"
