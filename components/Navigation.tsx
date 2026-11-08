@@ -257,18 +257,23 @@ export default function Navigation({ isVisible = true }: { isVisible?: boolean }
               color: "#F5F5F5",
               letterSpacing: "-0.03em",
               lineHeight: 1,
+              whiteSpace: "nowrap",
             }}
           >
             Nitish Kumar
           </span>
         </button>
 
-        {/* ── Desktop Nav (≥768px) ──────────────────────────────────────── */}
+        {/* ── Desktop Nav (≥900px) — centered in the middle of the bar ──── */}
         <nav
           style={{
             display: "flex",
             alignItems: "center",
             gap: "28px",
+            position: "absolute",
+            left: "50%",
+            top: "50%",
+            transform: "translate(-50%, -50%)",
           }}
           className="desktop-nav"
         >
@@ -594,7 +599,7 @@ export default function Navigation({ isVisible = true }: { isVisible?: boolean }
 
       {/* ── Responsive visibility styles ─────────────────────────────────── */}
       <style>{`
-        /* Desktop nav visible on ≥768px only */
+        /* Desktop nav visible on ≥900px only */
         .desktop-nav { display: flex; }
         .hamburger-btn { display: none; }
 
@@ -602,6 +607,15 @@ export default function Navigation({ isVisible = true }: { isVisible?: boolean }
           .desktop-nav { display: none !important; }
           .hamburger-btn { display: flex !important; }
           .hamburger-btn.is-hidden { display: none !important; }
+        }
+
+        /* Tighten the centered nav so it never overlaps the logo on
+           smaller desktop widths */
+        @media (min-width: 900px) and (max-width: 1023px) {
+          .desktop-nav { gap: 18px !important; }
+        }
+        @media (min-width: 1024px) and (max-width: 1279px) {
+          .desktop-nav { gap: 22px !important; }
         }
 
         @media (max-width: 380px) {
