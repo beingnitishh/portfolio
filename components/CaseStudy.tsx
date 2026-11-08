@@ -3,7 +3,9 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { AnimatePresence, MotionConfig, motion } from "framer-motion";
-import type { ProjectCase, ProjectCaseStudy } from "@/lib/projects";
+import type { CasePanel, CaseTextSection, ProjectCase, ProjectCaseStudy } from "@/lib/projects";
+
+type Section<K extends keyof ProjectCaseStudy> = NonNullable<ProjectCaseStudy[K]>;
 
 const DISPLAY = "var(--font-syne), 'Syne', sans-serif";
 const MONO = "var(--font-plex), 'IBM Plex Mono', monospace";
@@ -116,7 +118,7 @@ function Hero({ project, study }: { project: ProjectCase; study: ProjectCaseStud
                             className="text-[10px] uppercase tracking-[0.14em] text-[#666]"
                             style={{ fontFamily: MONO }}
                         >
-                            Inventory · AI Tooling
+                            {study.category}
                         </span>
                     </div>
 
@@ -191,8 +193,7 @@ function Hero({ project, study }: { project: ProjectCase; study: ProjectCaseStud
 /*  Features                                                                  */
 /* -------------------------------------------------------------------------- */
 
-function FeatureGrid({ study, accent }: { study: ProjectCaseStudy; accent: string }) {
-    const { features } = study;
+function FeatureGrid({ features, accent }: { features: Section<"features">; accent: string }) {
     return (
         <div>
             <SectionHeading
@@ -233,12 +234,14 @@ function FeatureGrid({ study, accent }: { study: ProjectCaseStudy; accent: strin
                         >
                             {item.title}
                         </h3>
-                        <p
-                            className="mt-2 text-[11.5px] leading-relaxed text-[#8a8a8a]"
-                            style={{ fontFamily: MONO }}
-                        >
-                            {item.description}
-                        </p>
+                        {item.description && (
+                            <p
+                                className="mt-2 text-[11.5px] leading-relaxed text-[#8a8a8a]"
+                                style={{ fontFamily: MONO }}
+                            >
+                                {item.description}
+                            </p>
+                        )}
                     </motion.div>
                 ))}
             </div>
@@ -250,8 +253,7 @@ function FeatureGrid({ study, accent }: { study: ProjectCaseStudy; accent: strin
 /*  How it works — vertical stepper                                           */
 /* -------------------------------------------------------------------------- */
 
-function HowItWorks({ study, accent }: { study: ProjectCaseStudy; accent: string }) {
-    const { howItWorks } = study;
+function HowItWorks({ howItWorks, accent }: { howItWorks: Section<"howItWorks">; accent: string }) {
     return (
         <div>
             <SectionHeading
@@ -335,8 +337,25 @@ function FlowArrow({ accent, vertical }: { accent: string; vertical?: boolean })
     );
 }
 
-function Architecture({ study, accent }: { study: ProjectCaseStudy; accent: string }) {
-    const { architecture } = study;
+function Architecture({ architecture, accent }: { architecture: Section<"architecture">; accent: string }) {
+    const nodes = architecture.nodes;
+    if (!nodes) {
+        return (
+            <div>
+                <SectionHeading
+                    eyebrow={architecture.eyebrow}
+                    heading={architecture.heading}
+                    intro={architecture.intro}
+                    accent={accent}
+                />
+                {architecture.body && (
+                    <Reveal className="mt-8 rounded-[14px] border-[0.5px] border-[#333] bg-[#121212] p-5 sm:p-6 md:mt-10">
+                        <p className="text-sm leading-relaxed text-[#a0a0a0] sm:text-[15px]">{architecture.body}</p>
+                    </Reveal>
+                )}
+            </div>
+        );
+    }
     return (
         <div>
             <SectionHeading
@@ -356,7 +375,7 @@ function Architecture({ study, accent }: { study: ProjectCaseStudy; accent: stri
                     }}
                     className="flex flex-col items-stretch md:flex-row md:items-center md:justify-between"
                 >
-                    {architecture.nodes.map((node, index) => (
+                    {nodes.map((node, index) => (
                         <React.Fragment key={node.title}>
                             <motion.div
                                 variants={{
@@ -382,7 +401,7 @@ function Architecture({ study, accent }: { study: ProjectCaseStudy; accent: stri
                                     </p>
                                 )}
                             </motion.div>
-                            {index < architecture.nodes.length - 1 && (
+                            {index < nodes.length - 1 && (
                                 <>
                                     <div className="flex justify-center md:hidden">
                                         <FlowArrow accent={accent} vertical />
@@ -416,8 +435,7 @@ function Architecture({ study, accent }: { study: ProjectCaseStudy; accent: stri
 /*  AI integration                                                            */
 /* -------------------------------------------------------------------------- */
 
-function AiSection({ study, accent }: { study: ProjectCaseStudy; accent: string }) {
-    const { ai } = study;
+function AiSection({ ai, accent }: { ai: Section<"ai">; accent: string }) {
     return (
         <div>
             <SectionHeading eyebrow={ai.eyebrow} heading={ai.heading} accent={accent} />
@@ -494,8 +512,7 @@ function AiSection({ study, accent }: { study: ProjectCaseStudy; accent: string 
 /*  Tech stack                                                                */
 /* -------------------------------------------------------------------------- */
 
-function TechStack({ study, accent }: { study: ProjectCaseStudy; accent: string }) {
-    const { techStack } = study;
+function TechStack({ techStack, accent }: { techStack: ProjectCaseStudy["techStack"]; accent: string }) {
     return (
         <div>
             <SectionHeading eyebrow={techStack.eyebrow} heading={techStack.heading} accent={accent} />
@@ -569,8 +586,7 @@ function ScreenshotPlaceholder({ caption, accent }: { caption: string; accent: s
     );
 }
 
-function Screenshots({ study, accent }: { study: ProjectCaseStudy; accent: string }) {
-    const { screenshots } = study;
+function Screenshots({ screenshots, accent }: { screenshots: Section<"screenshots">; accent: string }) {
     const [failed, setFailed] = useState<Record<string, boolean>>({});
     const [active, setActive] = useState<number | null>(null);
     const closeButtonRef = useRef<HTMLButtonElement>(null);
@@ -722,6 +738,59 @@ function Screenshots({ study, accent }: { study: ProjectCaseStudy; accent: strin
 }
 
 /* -------------------------------------------------------------------------- */
+/*  Paragraph + bullet sections                                               */
+/* -------------------------------------------------------------------------- */
+
+/** Paragraph section: "Who it’s for", "What I built", "What’s next". */
+function TextBlock({ section, accent }: { section: CaseTextSection; accent: string }) {
+    return (
+        <Reveal>
+            <SectionHeading eyebrow={section.eyebrow} heading={section.heading} accent={accent} />
+            <p className="mt-5 max-w-3xl text-sm leading-relaxed text-[#b3b3b3] sm:text-[15px]">{section.body}</p>
+        </Reveal>
+    );
+}
+
+/** Bulleted cards: "What was difficult", "Outcomes", "What I learned". */
+function Panels({ panels, accent }: { panels: CasePanel[]; accent: string }) {
+    return (
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+            {panels.map((panel, index) => (
+                <motion.div
+                    key={panel.heading}
+                    initial={{ opacity: 0, y: 16 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, amount: 0.25 }}
+                    transition={{ duration: 0.45, delay: index * 0.06, ease: "easeOut" }}
+                    className="rounded-[14px] border-[0.5px] border-[#333] bg-[#121212] p-[18px]"
+                >
+                    <span className="text-[10px] uppercase tracking-[0.14em]" style={{ color: accent, fontFamily: MONO }}>
+                        {panel.eyebrow}
+                    </span>
+                    <h3 className="mt-2 text-[15px] leading-snug text-[#eee]" style={{ fontFamily: DISPLAY, fontWeight: 700 }}>
+                        {panel.heading}
+                    </h3>
+                    <ul className="mt-4 flex flex-col gap-2.5">
+                        {panel.items.map((item) => (
+                            <li key={item} className="flex items-start gap-2.5">
+                                <span
+                                    aria-hidden="true"
+                                    className="mt-[7px] h-[4px] w-[4px] shrink-0 rounded-full"
+                                    style={{ backgroundColor: accent }}
+                                />
+                                <span className="text-[11.5px] leading-relaxed text-[#8a8a8a]" style={{ fontFamily: MONO }}>
+                                    {item}
+                                </span>
+                            </li>
+                        ))}
+                    </ul>
+                </motion.div>
+            ))}
+        </div>
+    );
+}
+
+/* -------------------------------------------------------------------------- */
 /*  Bottom CTA                                                                */
 /* -------------------------------------------------------------------------- */
 
@@ -782,7 +851,6 @@ function BottomCta({ project, study }: { project: ProjectCase; study: ProjectCas
 
 export default function CaseStudy({ project }: { project: ProjectCase }) {
     const study = project.caseStudy;
-    if (!study) return null;
     const accent = project.accent;
 
     return (
@@ -802,12 +870,16 @@ export default function CaseStudy({ project }: { project: ProjectCase }) {
                         </p>
                     </Reveal>
 
-                    <FeatureGrid study={study} accent={accent} />
-                    <HowItWorks study={study} accent={accent} />
-                    <Architecture study={study} accent={accent} />
-                    <AiSection study={study} accent={accent} />
-                    <TechStack study={study} accent={accent} />
-                    <Screenshots study={study} accent={accent} />
+                    {study.audience && <TextBlock section={study.audience} accent={accent} />}
+                    {study.features && <FeatureGrid features={study.features} accent={accent} />}
+                    {study.solution && <TextBlock section={study.solution} accent={accent} />}
+                    {study.howItWorks && <HowItWorks howItWorks={study.howItWorks} accent={accent} />}
+                    {study.architecture && <Architecture architecture={study.architecture} accent={accent} />}
+                    {study.ai && <AiSection ai={study.ai} accent={accent} />}
+                    {study.panels && study.panels.length > 0 && <Panels panels={study.panels} accent={accent} />}
+                    {study.next && <TextBlock section={study.next} accent={accent} />}
+                    <TechStack techStack={study.techStack} accent={accent} />
+                    {study.screenshots && <Screenshots screenshots={study.screenshots} accent={accent} />}
                     <BottomCta project={project} study={study} />
                 </div>
             </div>

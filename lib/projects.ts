@@ -6,7 +6,7 @@ import { GITHUB_URL } from "./site";
 
 export type CaseFeature = {
     title: string;
-    description: string;
+    description?: string;
 };
 
 export type CaseStep = {
@@ -30,56 +30,44 @@ export type CaseTechGroup = {
     items: string[];
 };
 
+export type CaseHeading = {
+    eyebrow: string;
+    heading: string;
+};
+
+/** Paragraph section such as "Who it’s for" or "What’s next". */
+export type CaseTextSection = CaseHeading & {
+    body: string;
+};
+
+/** Bulleted card such as "Outcomes". */
+export type CasePanel = CaseHeading & {
+    items: string[];
+};
+
+/**
+ * Every project uses this shape. The case-study page renders each section
+ * that is present, in this order: overview, audience, features, solution,
+ * how it works, architecture, AI, panels, next, tech stack, screenshots, CTA.
+ */
 export type ProjectCaseStudy = {
     tagline: string;
+    /** Short label shown in the hero, e.g. "Marketplace analytics". */
+    category: string;
     heroBadges: string[];
-    overview: {
-        eyebrow: string;
-        heading: string;
-        body: string;
-    };
-    features: {
-        eyebrow: string;
-        heading: string;
-        intro?: string;
-        items: CaseFeature[];
-    };
-    howItWorks: {
-        eyebrow: string;
-        heading: string;
-        intro?: string;
-        steps: CaseStep[];
-    };
-    architecture: {
-        eyebrow: string;
-        heading: string;
-        intro?: string;
-        nodes: CaseFlowNode[];
-        footnote?: string;
-    };
-    ai: {
-        eyebrow: string;
-        heading: string;
-        intro: string;
-        steps: CaseStep[];
-        prompts: string[];
-        promptLabel?: string;
-    };
-    techStack: {
-        eyebrow: string;
-        heading: string;
-        groups: CaseTechGroup[];
-    };
-    screenshots: {
-        eyebrow: string;
-        heading: string;
-        intro?: string;
-        items: CaseScreenshot[];
-    };
-    cta: {
-        heading: string;
-        body: string;
-    };
+    overview: CaseTextSection;
+    audience?: CaseTextSection;
+    features?: CaseHeading & { intro?: string; items: CaseFeature[] };
+    solution?: CaseTextSection;
+    howItWorks?: CaseHeading & { intro?: string; steps: CaseStep[] };
+    /** Diagram when `nodes` is set, otherwise the paragraph in `body`. */
+    architecture?: CaseHeading & { intro?: string; nodes?: CaseFlowNode[]; footnote?: string; body?: string };
+    ai?: CaseHeading & { intro: string; steps: CaseStep[]; prompts: string[]; promptLabel?: string };
+    panels?: CasePanel[];
+    next?: CaseTextSection;
+    techStack: CaseHeading & { groups: CaseTechGroup[] };
+    screenshots?: CaseHeading & { intro?: string; items: CaseScreenshot[] };
+    cta: { heading: string; body: string };
 };
 
 export type ProjectCardData = {
@@ -116,17 +104,7 @@ export type ProjectCase = {
         description: string;
     };
     tech: string[];
-    /* Long-form story used by the plain case-study layout. */
-    problem?: string;
-    audience?: string;
-    solution?: string;
-    architecture?: string;
-    challenges?: string[];
-    outcomes?: string[];
-    learnings?: string[];
-    next?: string;
-    /* Rich, sectioned case study (hero → CTA). */
-    caseStudy?: ProjectCaseStudy;
+    caseStudy: ProjectCaseStudy;
 };
 
 /* -------------------------------------------------------------------------- */
@@ -140,8 +118,7 @@ export const PROJECTS: ProjectCase[] = [
         badge: "LIVE",
         accent: "#3B82F6",
         liveUrl: "https://sellermetric.vercel.app/",
-        summary:
-            "A browser-based analytics tool that turns Flipkart Earn More Reports into profit, SKU, and return-rate dashboards — without uploading seller data to a backend.",
+        summary: "A browser-based analytics tool that turns Flipkart Earn More Reports into profit, SKU, and return-rate dashboards — without uploading seller data to a backend.",
         card: {
             description: "Web analytics platform for Flipkart sellers",
             highlights: [
@@ -150,30 +127,109 @@ export const PROJECTS: ProjectCase[] = [
                 "Surfaces loss-making products from raw data",
             ],
         },
-        tech: ["React", "Tailwind CSS", "Recharts", "SheetJS"],
-        problem:
-            "Flipkart sellers receive dense Earn More Reports. Finding loss-making SKUs, return spikes, and ad waste usually means hours in Excel and easy-to-miss rows.",
-        audience:
-            "Flipkart marketplace sellers and operators who already export Earn More Reports and need faster, visual reads of catalog health.",
-        solution:
-            "SellerMetric lets a seller upload the report in the browser. SheetJS parses the file locally. Recharts then surfaces profit, SKU performance, and return-rate views so loss-making products are obvious.",
-        architecture:
-            "Client-only processing: the spreadsheet never leaves the device. React renders the UI, SheetJS reads the workbook, and Recharts draws the dashboards. There is no server-side storage of seller reports.",
-        challenges: [
-            "Mapping inconsistent Earn More Report columns into a stable analytics model.",
-            "Keeping large workbooks usable entirely in-browser.",
-            "Making loss-making SKUs visible without requiring a data-science background.",
+        tech: [
+            "React",
+            "Tailwind CSS",
+            "Recharts",
+            "SheetJS",
         ],
-        outcomes: [
-            "Sellers can inspect profit, SKU, and return rate without a backend login.",
-            "Loss-making products surface from the same files operators already download.",
-            "Privacy-first: report data stays on the seller’s machine.",
-        ],
-        learnings: [
-            "Marketplace reports are messy; column mapping is the product, not a side task.",
-            "In-browser parsing is enough for typical seller file sizes and removes a trust barrier.",
-        ],
-        next: "Richer cohort views and clearer export of “fix these SKUs first” lists.",
+        caseStudy: {
+            tagline: "A browser-based analytics tool that turns Flipkart Earn More Reports into profit, SKU, and return-rate dashboards — without uploading seller data to a backend.",
+            category: "Marketplace analytics",
+            heroBadges: [
+                "React",
+                "Tailwind CSS",
+                "Recharts",
+                "SheetJS",
+            ],
+            overview: {
+                eyebrow: "CONTEXT",
+                heading: "Overview",
+                body: "Flipkart sellers receive dense Earn More Reports. Finding loss-making SKUs, return spikes, and ad waste usually means hours in Excel and easy-to-miss rows.",
+            },
+            audience: {
+                eyebrow: "AUDIENCE",
+                heading: "Who it’s for",
+                body: "Flipkart marketplace sellers and operators who already export Earn More Reports and need faster, visual reads of catalog health.",
+            },
+            features: {
+                eyebrow: "WHAT IT DOES",
+                heading: "Key features",
+                items: [
+                    {
+                        title: "Upload & analyze Earn More Reports in-browser (no backend)",
+                    },
+                    {
+                        title: "Recharts dashboards for profit/SKU/return rate",
+                    },
+                    {
+                        title: "Surfaces loss-making products from raw data",
+                    },
+                ],
+            },
+            solution: {
+                eyebrow: "APPROACH",
+                heading: "What I built",
+                body: "SellerMetric lets a seller upload the report in the browser. SheetJS parses the file locally. Recharts then surfaces profit, SKU performance, and return-rate views so loss-making products are obvious.",
+            },
+            architecture: {
+                eyebrow: "UNDER THE HOOD",
+                heading: "Architecture",
+                body: "Client-only processing: the spreadsheet never leaves the device. React renders the UI, SheetJS reads the workbook, and Recharts draws the dashboards. There is no server-side storage of seller reports.",
+            },
+            panels: [
+                {
+                    eyebrow: "CHALLENGES",
+                    heading: "What was difficult",
+                    items: [
+                        "Mapping inconsistent Earn More Report columns into a stable analytics model.",
+                        "Keeping large workbooks usable entirely in-browser.",
+                        "Making loss-making SKUs visible without requiring a data-science background.",
+                    ],
+                },
+                {
+                    eyebrow: "OUTCOMES",
+                    heading: "Outcomes",
+                    items: [
+                        "Sellers can inspect profit, SKU, and return rate without a backend login.",
+                        "Loss-making products surface from the same files operators already download.",
+                        "Privacy-first: report data stays on the seller’s machine.",
+                    ],
+                },
+                {
+                    eyebrow: "LEARNINGS",
+                    heading: "What I learned",
+                    items: [
+                        "Marketplace reports are messy; column mapping is the product, not a side task.",
+                        "In-browser parsing is enough for typical seller file sizes and removes a trust barrier.",
+                    ],
+                },
+            ],
+            next: {
+                eyebrow: "NEXT",
+                heading: "What’s next",
+                body: "Richer cohort views and clearer export of “fix these SKUs first” lists.",
+            },
+            techStack: {
+                eyebrow: "TOOLING",
+                heading: "Tech Stack",
+                groups: [
+                    {
+                        heading: "Stack",
+                        items: [
+                            "React",
+                            "Tailwind CSS",
+                            "Recharts",
+                            "SheetJS",
+                        ],
+                    },
+                ],
+            },
+            cta: {
+                heading: "Interested in this project?",
+                body: "Explore the other case studies on the homepage, or get in touch through the contact section below.",
+            },
+        },
     },
     {
         slug: "starstock",
@@ -199,6 +255,7 @@ export const PROJECTS: ProjectCase[] = [
         tech: ["Next.js", "TypeScript", "PostgreSQL", "MCP"],
         caseStudy: {
             tagline: "Multi-warehouse inventory system with an AI connector",
+            category: "Inventory · AI Tooling",
             heroBadges: ["Next.js", "TypeScript", "PostgreSQL", "MCP"],
             overview: {
                 eyebrow: "CONTEXT",
@@ -413,8 +470,7 @@ export const PROJECTS: ProjectCase[] = [
         title: "Star Work Warranty Portal",
         badge: "DEPLOYED",
         accent: "#10B981",
-        summary:
-            "A branded warranty registration flow that writes customer and product data to both Google Sheets and Supabase, replacing manual spreadsheet entry.",
+        summary: "A branded warranty registration flow that writes customer and product data to both Google Sheets and Supabase, replacing manual spreadsheet entry.",
         card: {
             description: "Branded warranty registration with dual-backend architecture",
             highlights: [
@@ -423,34 +479,110 @@ export const PROJECTS: ProjectCase[] = [
                 "Replaced manual spreadsheet entry with self-serve flow",
             ],
         },
-        tech: ["React", "Google Sheets API", "Supabase"],
-        problem:
-            "Warranty registrations were collected by hand into spreadsheets — slow, error-prone, and hard to audit.",
-        audience: "Star Work customers registering a purchase, and the internal team that tracks those warranties.",
-        solution:
-            "A multi-step form captures customer, product, and purchase details, then syncs the submission to Google Sheets and Supabase so operations keep a familiar sheet while also having a structured database.",
-        architecture:
-            "React multi-step form on the client. On submit, the same payload is written to the Google Sheets API and to Supabase so neither system is the single point of failure for record-keeping.",
-        challenges: [
-            "Keeping two backends in sync from one submission.",
-            "Designing a form that customers can finish without training.",
+        tech: [
+            "React",
+            "Google Sheets API",
+            "Supabase",
         ],
-        outcomes: [
-            "Self-serve registration replaced manual spreadsheet typing.",
-            "Operations still have a sheet; engineering has a queryable store.",
-        ],
-        learnings: [
-            "Dual-write is worth it when one audience lives in Sheets and another needs a database.",
-        ],
-        next: "Status lookup for customers and cleaner failure handling if one write path is down.",
+        caseStudy: {
+            tagline: "A branded warranty registration flow that writes customer and product data to both Google Sheets and Supabase, replacing manual spreadsheet entry.",
+            category: "Warranty registration",
+            heroBadges: [
+                "React",
+                "Google Sheets API",
+                "Supabase",
+            ],
+            overview: {
+                eyebrow: "CONTEXT",
+                heading: "Overview",
+                body: "Warranty registrations were collected by hand into spreadsheets — slow, error-prone, and hard to audit.",
+            },
+            audience: {
+                eyebrow: "AUDIENCE",
+                heading: "Who it’s for",
+                body: "Star Work customers registering a purchase, and the internal team that tracks those warranties.",
+            },
+            features: {
+                eyebrow: "WHAT IT DOES",
+                heading: "Key features",
+                items: [
+                    {
+                        title: "Google Sheets + Supabase synced on submission",
+                    },
+                    {
+                        title: "Multi-step form captures customer/product/purchase data",
+                    },
+                    {
+                        title: "Replaced manual spreadsheet entry with self-serve flow",
+                    },
+                ],
+            },
+            solution: {
+                eyebrow: "APPROACH",
+                heading: "What I built",
+                body: "A multi-step form captures customer, product, and purchase details, then syncs the submission to Google Sheets and Supabase so operations keep a familiar sheet while also having a structured database.",
+            },
+            architecture: {
+                eyebrow: "UNDER THE HOOD",
+                heading: "Architecture",
+                body: "React multi-step form on the client. On submit, the same payload is written to the Google Sheets API and to Supabase so neither system is the single point of failure for record-keeping.",
+            },
+            panels: [
+                {
+                    eyebrow: "CHALLENGES",
+                    heading: "What was difficult",
+                    items: [
+                        "Keeping two backends in sync from one submission.",
+                        "Designing a form that customers can finish without training.",
+                    ],
+                },
+                {
+                    eyebrow: "OUTCOMES",
+                    heading: "Outcomes",
+                    items: [
+                        "Self-serve registration replaced manual spreadsheet typing.",
+                        "Operations still have a sheet; engineering has a queryable store.",
+                    ],
+                },
+                {
+                    eyebrow: "LEARNINGS",
+                    heading: "What I learned",
+                    items: [
+                        "Dual-write is worth it when one audience lives in Sheets and another needs a database.",
+                    ],
+                },
+            ],
+            next: {
+                eyebrow: "NEXT",
+                heading: "What’s next",
+                body: "Status lookup for customers and cleaner failure handling if one write path is down.",
+            },
+            techStack: {
+                eyebrow: "TOOLING",
+                heading: "Tech Stack",
+                groups: [
+                    {
+                        heading: "Stack",
+                        items: [
+                            "React",
+                            "Google Sheets API",
+                            "Supabase",
+                        ],
+                    },
+                ],
+            },
+            cta: {
+                heading: "Interested in this project?",
+                body: "Explore the other case studies on the homepage, or get in touch through the contact section below.",
+            },
+        },
     },
     {
         slug: "meesho-label-sorter",
         title: "Meesho Label Sorter Pro",
         badge: "TOOL",
         accent: "#F59E0B",
-        summary:
-            "A shipping-label parser that groups Meesho orders by courier so warehouse staff stop sorting 50+ daily labels by hand.",
+        summary: "A shipping-label parser that groups Meesho orders by courier so warehouse staff stop sorting 50+ daily labels by hand.",
         card: {
             description: "Shipping label parser eliminating manual courier sorting",
             highlights: [
@@ -458,27 +590,95 @@ export const PROJECTS: ProjectCase[] = [
                 "Built for sellers managing 50+ daily shipments across multiple providers",
             ],
         },
-        tech: ["JavaScript"],
-        problem:
-            "Meesho sellers shipping across multiple couriers were reading each label and stacking by provider — slow and easy to mis-sort at volume.",
-        audience: "Meesho sellers handling 50+ daily shipments across more than one courier.",
-        solution:
-            "The tool parses Meesho label files and automatically groups orders by courier so packing can follow one stack per provider.",
-        architecture:
-            "A JavaScript parser reads the label export, extracts courier identity, and groups orders in the UI. No marketplace API credentials are required.",
-        challenges: [
-            "Label layouts vary; courier detection has to tolerate messy source files.",
-            "The UI has to be usable on a packing desk, not just a laptop.",
+        tech: [
+            "JavaScript",
         ],
-        outcomes: [
-            "Courier grouping no longer depends on reading every label.",
-            "Built around the real daily volume of multi-courier Meesho sellers.",
-        ],
-        learnings: [
-            "Ops tools win when they remove one repetitive motion, not when they add a dashboard.",
-        ],
-        next: "Print-ready stacks and support for additional marketplace label formats.",
-    },
+        caseStudy: {
+            tagline: "A shipping-label parser that groups Meesho orders by courier so warehouse staff stop sorting 50+ daily labels by hand.",
+            category: "Shipping operations",
+            heroBadges: [
+                "JavaScript",
+            ],
+            overview: {
+                eyebrow: "CONTEXT",
+                heading: "Overview",
+                body: "Meesho sellers shipping across multiple couriers were reading each label and stacking by provider — slow and easy to mis-sort at volume.",
+            },
+            audience: {
+                eyebrow: "AUDIENCE",
+                heading: "Who it’s for",
+                body: "Meesho sellers handling 50+ daily shipments across more than one courier.",
+            },
+            features: {
+                eyebrow: "WHAT IT DOES",
+                heading: "Key features",
+                items: [
+                    {
+                        title: "Parses Meesho label files and groups orders by courier automatically",
+                    },
+                    {
+                        title: "Built for sellers managing 50+ daily shipments across multiple providers",
+                    },
+                ],
+            },
+            solution: {
+                eyebrow: "APPROACH",
+                heading: "What I built",
+                body: "The tool parses Meesho label files and automatically groups orders by courier so packing can follow one stack per provider.",
+            },
+            architecture: {
+                eyebrow: "UNDER THE HOOD",
+                heading: "Architecture",
+                body: "A JavaScript parser reads the label export, extracts courier identity, and groups orders in the UI. No marketplace API credentials are required.",
+            },
+            panels: [
+                {
+                    eyebrow: "CHALLENGES",
+                    heading: "What was difficult",
+                    items: [
+                        "Label layouts vary; courier detection has to tolerate messy source files.",
+                        "The UI has to be usable on a packing desk, not just a laptop.",
+                    ],
+                },
+                {
+                    eyebrow: "OUTCOMES",
+                    heading: "Outcomes",
+                    items: [
+                        "Courier grouping no longer depends on reading every label.",
+                        "Built around the real daily volume of multi-courier Meesho sellers.",
+                    ],
+                },
+                {
+                    eyebrow: "LEARNINGS",
+                    heading: "What I learned",
+                    items: [
+                        "Ops tools win when they remove one repetitive motion, not when they add a dashboard.",
+                    ],
+                },
+            ],
+            next: {
+                eyebrow: "NEXT",
+                heading: "What’s next",
+                body: "Print-ready stacks and support for additional marketplace label formats.",
+            },
+            techStack: {
+                eyebrow: "TOOLING",
+                heading: "Tech Stack",
+                groups: [
+                    {
+                        heading: "Stack",
+                        items: [
+                            "JavaScript",
+                        ],
+                    },
+                ],
+            },
+            cta: {
+                heading: "Interested in this project?",
+                body: "Explore the other case studies on the homepage, or get in touch through the contact section below.",
+            },
+        },
+    }
 ];
 
 /* -------------------------------------------------------------------------- */
@@ -520,6 +720,11 @@ export const PROJECT_CARDS: ProjectCardData[] = [
     ...HOMEPAGE_EXTRAS,
 ];
 
+/** Case-study projects listed on /projects. Personal Portfolio stays on the homepage only. */
+export const PROJECTS_PAGE_CARDS: ProjectCardData[] = PROJECT_CARDS.filter((card) =>
+    PROJECTS.some((project) => project.slug === card.id),
+);
+
 /** Number of projects with a live site. Used for the "Live Projects" stat. */
 export const LIVE_PROJECT_COUNT = PROJECTS.filter((project) => Boolean(project.liveUrl)).length;
 
@@ -527,7 +732,3 @@ export function getProject(slug: string) {
     return PROJECTS.find((p) => p.slug === slug);
 }
 
-/** Projects that still use the original plain-text case-study layout. */
-export function hasStorySections(project: ProjectCase) {
-    return Boolean(project.problem && project.solution);
-}
