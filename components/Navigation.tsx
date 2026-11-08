@@ -257,18 +257,23 @@ export default function Navigation({ isVisible = true }: { isVisible?: boolean }
               color: "#F5F5F5",
               letterSpacing: "-0.03em",
               lineHeight: 1,
+              whiteSpace: "nowrap",
             }}
           >
             Nitish Kumar
           </span>
         </button>
 
-        {/* ── Desktop Nav (≥768px) ──────────────────────────────────────── */}
+        {/* ── Desktop Nav (≥900px) — centered in the middle of the bar ──── */}
         <nav
           style={{
             display: "flex",
             alignItems: "center",
             gap: "28px",
+            position: "absolute",
+            left: "50%",
+            top: "50%",
+            transform: "translate(-50%, -50%)",
           }}
           className="desktop-nav"
         >
@@ -283,15 +288,19 @@ export default function Navigation({ isVisible = true }: { isVisible?: boolean }
               {link.label}
             </button>
           ))}
+        </nav>
 
+        {/* ── Right zone: Instagram + Mobile Hamburger ─────────────────── */}
+        <div className="nav-right" style={{ display: "flex", alignItems: "center", gap: "12px" }}>
           {/* Instagram icon button — the ONLY Instagram button in this component */}
           <a
-            href={"https://www.instagram.com/oyee.nitishh/"}
+            href={INSTAGRAM_URL}
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Instagram"
             onMouseEnter={() => setIgHovered(true)}
             onMouseLeave={() => setIgHovered(false)}
+            className="nav-ig"
             style={{
               display: "flex",
               alignItems: "center",
@@ -311,34 +320,34 @@ export default function Navigation({ isVisible = true }: { isVisible?: boolean }
           >
             <InstagramIcon color="currentColor" />
           </a>
-        </nav>
 
-        {/* ── Mobile Hamburger (< 768px) ────────────────────────────────── */}
-        <button
-          ref={hamburgerRef}
-          type="button"
-          onClick={openMenu}
-          aria-label="Open menu"
-          aria-expanded={menuOpen}
-          className={`hamburger-btn${menuOpen ? " is-hidden" : ""}`}
-          style={{
-            background: "transparent",
-            border: "none",
-            padding: 0,
-            cursor: "pointer",
-            flexDirection: "column",
-            gap: "5px",
-            alignItems: "center",
-            justifyContent: "center",
-            width: "32px",
-            height: "32px",
-            pointerEvents: menuOpen ? "none" : "auto",
-          }}
-        >
-          <span style={{ display: "block", width: "22px", height: "1.5px", background: "rgba(255,255,255,0.7)", borderRadius: "2px" }} />
-          <span style={{ display: "block", width: "22px", height: "1.5px", background: "rgba(255,255,255,0.7)", borderRadius: "2px" }} />
-          <span style={{ display: "block", width: "22px", height: "1.5px", background: "rgba(255,255,255,0.7)", borderRadius: "2px" }} />
-        </button>
+          {/* ── Mobile Hamburger (< 900px) ─────────────────────────────── */}
+          <button
+            ref={hamburgerRef}
+            type="button"
+            onClick={openMenu}
+            aria-label="Open menu"
+            aria-expanded={menuOpen}
+            className={`hamburger-btn${menuOpen ? " is-hidden" : ""}`}
+            style={{
+              background: "transparent",
+              border: "none",
+              padding: 0,
+              cursor: "pointer",
+              flexDirection: "column",
+              gap: "5px",
+              alignItems: "center",
+              justifyContent: "center",
+              width: "32px",
+              height: "32px",
+              pointerEvents: menuOpen ? "none" : "auto",
+            }}
+          >
+            <span style={{ display: "block", width: "22px", height: "1.5px", background: "rgba(255,255,255,0.7)", borderRadius: "2px" }} />
+            <span style={{ display: "block", width: "22px", height: "1.5px", background: "rgba(255,255,255,0.7)", borderRadius: "2px" }} />
+            <span style={{ display: "block", width: "22px", height: "1.5px", background: "rgba(255,255,255,0.7)", borderRadius: "2px" }} />
+          </button>
+        </div>
       </header>
 
       {/* ═══════════════════════════════════════════════════════════════════
@@ -594,14 +603,21 @@ export default function Navigation({ isVisible = true }: { isVisible?: boolean }
 
       {/* ── Responsive visibility styles ─────────────────────────────────── */}
       <style>{`
-        /* Desktop nav visible on ≥768px only */
+        /* Desktop nav visible on ≥900px only */
         .desktop-nav { display: flex; }
+        .nav-right { display: flex; }
         .hamburger-btn { display: none; }
 
         @media (max-width: 899px) {
           .desktop-nav { display: none !important; }
+          .nav-ig { display: none !important; }
           .hamburger-btn { display: flex !important; }
           .hamburger-btn.is-hidden { display: none !important; }
+        }
+
+        /* Keep the centered links clear of the logo on narrow desktop widths */
+        @media (min-width: 900px) and (max-width: 1023px) {
+          .desktop-nav { gap: 20px !important; }
         }
 
         @media (max-width: 380px) {
