@@ -2,13 +2,7 @@
 
 import { useRef, useEffect, useState, useCallback } from "react";
 import { useScroll, useMotionValueEvent } from "framer-motion";
-
-const TOTAL_FRAMES = 89;
-
-function getFramePath(index: number): string {
-    const padded = String(index).padStart(2, "0");
-    return `/sequence/frame_${padded}_delay-0.067s.webp`;
-}
+import { TOTAL_FRAMES, drawCoverFrame, getFramePath } from "@/lib/frames";
 
 export default function ScrollyCanvas({ onLoaded }: { onLoaded?: () => void }) {
     const containerRef = useRef<HTMLDivElement>(null);
@@ -17,47 +11,14 @@ export default function ScrollyCanvas({ onLoaded }: { onLoaded?: () => void }) {
     const [imagesLoaded, setImagesLoaded] = useState(false);
     const currentFrameRef = useRef(0);
 
-    // Draw frame with object-fit: cover logic
     const drawFrame = useCallback((frameIndex: number) => {
         const canvas = canvasRef.current;
         if (!canvas) return;
 
-        const ctx = canvas.getContext("2d");
-        if (!ctx) return;
-
         const img = imagesRef.current[frameIndex];
         if (!img || !img.complete || img.naturalWidth === 0) return;
 
-        // Set canvas to screen size
-        const dpr = window.devicePixelRatio || 1;
-        const cw = canvas.clientWidth;
-        const ch = canvas.clientHeight;
-        canvas.width = cw * dpr;
-        canvas.height = ch * dpr;
-        ctx.scale(dpr, dpr);
-
-        // object-fit: cover calculation
-        const imgRatio = img.naturalWidth / img.naturalHeight;
-        const canvasRatio = cw / ch;
-
-        let drawWidth: number, drawHeight: number, offsetX: number, offsetY: number;
-
-        if (imgRatio > canvasRatio) {
-            // Image is wider than canvas — fit height to canvas, crop width horizontally
-            drawHeight = ch;
-            drawWidth = ch * imgRatio;
-            offsetX = (cw - drawWidth) / 2;
-            offsetY = 0;
-        } else {
-            // Image is taller than canvas — fit width to canvas, crop height vertically
-            drawWidth = cw;
-            drawHeight = cw / imgRatio;
-            offsetX = 0;
-            offsetY = (ch - drawHeight) / 2;
-        }
-
-        ctx.clearRect(0, 0, cw, ch);
-        ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
+        drawCoverFrame(canvas, img);
     }, []);
 
     // Preload all images (first frame only when the user prefers reduced motion)

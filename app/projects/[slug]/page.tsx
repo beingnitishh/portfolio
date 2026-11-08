@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getProject, PROJECTS } from "@/lib/projects";
+import CaseStudy from "@/components/CaseStudy";
+import { getProject, hasStorySections, PROJECTS } from "@/lib/projects";
 import { SITE_NAME, SITE_URL } from "@/lib/site";
 
 export function generateStaticParams() {
@@ -18,14 +19,17 @@ export async function generateMetadata({
     if (!project) return {};
     const url = `${SITE_URL}/projects/${project.slug}`;
     const ogImage = "/og.jpg?v=2";
+    const title = project.seo?.title ?? project.title;
+    const description = project.seo?.description ?? project.summary;
     return {
-        title: project.title,
-        description: project.summary,
+        title,
+        description,
         alternates: { canonical: url },
         openGraph: {
-            title: `${project.title} — ${SITE_NAME}`,
-            description: project.summary,
+            title: `${title} — ${SITE_NAME}`,
+            description,
             url,
+            siteName: SITE_NAME,
             type: "article",
             images: [
                 {
@@ -38,6 +42,8 @@ export async function generateMetadata({
         },
         twitter: {
             card: "summary_large_image",
+            title: `${title} — ${SITE_NAME}`,
+            description,
             images: [ogImage],
         },
     };
@@ -52,23 +58,60 @@ export default async function ProjectPage({
     const project = getProject(slug);
     if (!project) notFound();
 
+    const canonical = `${SITE_URL}/projects/${project.slug}`;
+
     const breadcrumb = {
         "@context": "https://schema.org",
         "@type": "BreadcrumbList",
         itemListElement: [
             { "@type": "ListItem", position: 1, name: "Home", item: `${SITE_URL}/` },
-            { "@type": "ListItem", position: 2, name: "Projects", item: `${SITE_URL}/projects` },
+            { "@type": "ListItem", position: 2, name: "Projects", item: `${SITE_URL}/#projects` },
             {
                 "@type": "ListItem",
                 position: 3,
                 name: project.title,
-                item: `${SITE_URL}/projects/${project.slug}`,
+                item: canonical,
             },
         ],
     };
 
+    const software =
+        project.caseStudy && project.liveUrl
+            ? {
+                  "@context": "https://schema.org",
+                  "@type": "SoftwareApplication",
+                  name: project.title,
+                  description: project.summary,
+                  applicationCategory: "BusinessApplication",
+                  applicationSubCategory: "Inventory Management",
+                  operatingSystem: "Web",
+                  url: project.liveUrl,
+                  ...(project.githubUrl ? { sameAs: [project.githubUrl] } : {}),
+                  author: { "@type": "Person", name: SITE_NAME, url: `${SITE_URL}/` },
+                  featureList: project.caseStudy.features.items.map((item) => item.title),
+              }
+            : null;
+
+    if (project.caseStudy) {
+        return (
+            <>
+                <script
+                    type="application/ld+json"
+                    dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }}
+                />
+                {software && (
+                    <script
+                        type="application/ld+json"
+                        dangerouslySetInnerHTML={{ __html: JSON.stringify(software) }}
+                    />
+                )}
+                <CaseStudy project={project} />
+            </>
+        );
+    }
+
     return (
-        <main className="min-h-screen bg-[#080808] px-6 py-24 text-white">
+        <div className="px-6 py-24 text-white">
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }}
@@ -100,50 +143,59 @@ export default async function ProjectPage({
                             GitHub ↗
                         </a>
                     )}
-                    <Link href="/projects" className="text-white/40 hover:text-white">
-                        All projects
+                    <Link href="/#projects" className="text-white/40 hover:text-white">
+                        Back to projects
                     </Link>
                 </div>
 
-                {[
-                    ["The problem", project.problem],
-                    ["Who it’s for", project.audience],
-                    ["What I built", project.solution],
-                    ["Architecture", project.architecture],
-                    ["What I’d improve", project.next],
-                ].map(([title, body]) => (
-                    <section key={title} className="mb-8">
-                        <h2 className="mb-2 text-xl font-semibold">{title}</h2>
-                        <p className="text-sm leading-relaxed text-white/55">{body}</p>
+                {hasStorySections(project) &&
+                    [
+                        ["The problem", project.problem],
+                        ["Who it’s for", project.audience],
+                        ["What I built", project.solution],
+                        ["Architecture", project.architecture],
+                        ["What I’d improve", project.next],
+                    ]
+                        .filter((entry): entry is [string, string] => Boolean(entry[1]))
+                        .map(([title, body]) => (
+                            <section key={title} className="mb-8">
+                                <h2 className="mb-2 text-xl font-semibold">{title}</h2>
+                                <p className="text-sm leading-relaxed text-white/55">{body}</p>
+                            </section>
+                        ))}
+
+                {project.challenges && project.challenges.length > 0 && (
+                    <section className="mb-8">
+                        <h2 className="mb-2 text-xl font-semibold">What was difficult</h2>
+                        <ul className="list-disc space-y-2 pl-5 text-sm text-white/55">
+                            {project.challenges.map((item) => (
+                                <li key={item}>{item}</li>
+                            ))}
+                        </ul>
                     </section>
-                ))}
+                )}
 
-                <section className="mb-8">
-                    <h2 className="mb-2 text-xl font-semibold">What was difficult</h2>
-                    <ul className="list-disc space-y-2 pl-5 text-sm text-white/55">
-                        {project.challenges.map((item) => (
-                            <li key={item}>{item}</li>
-                        ))}
-                    </ul>
-                </section>
+                {project.outcomes && project.outcomes.length > 0 && (
+                    <section className="mb-8">
+                        <h2 className="mb-2 text-xl font-semibold">Outcomes</h2>
+                        <ul className="list-disc space-y-2 pl-5 text-sm text-white/55">
+                            {project.outcomes.map((item) => (
+                                <li key={item}>{item}</li>
+                            ))}
+                        </ul>
+                    </section>
+                )}
 
-                <section className="mb-8">
-                    <h2 className="mb-2 text-xl font-semibold">Outcomes</h2>
-                    <ul className="list-disc space-y-2 pl-5 text-sm text-white/55">
-                        {project.outcomes.map((item) => (
-                            <li key={item}>{item}</li>
-                        ))}
-                    </ul>
-                </section>
-
-                <section className="mb-8">
-                    <h2 className="mb-2 text-xl font-semibold">What I learned</h2>
-                    <ul className="list-disc space-y-2 pl-5 text-sm text-white/55">
-                        {project.learnings.map((item) => (
-                            <li key={item}>{item}</li>
-                        ))}
-                    </ul>
-                </section>
+                {project.learnings && project.learnings.length > 0 && (
+                    <section className="mb-8">
+                        <h2 className="mb-2 text-xl font-semibold">What I learned</h2>
+                        <ul className="list-disc space-y-2 pl-5 text-sm text-white/55">
+                            {project.learnings.map((item) => (
+                                <li key={item}>{item}</li>
+                            ))}
+                        </ul>
+                    </section>
+                )}
 
                 <section className="mb-12">
                     <h2 className="mb-3 text-xl font-semibold">Technology</h2>
@@ -164,6 +216,6 @@ export default async function ProjectPage({
                     </Link>
                 </nav>
             </article>
-        </main>
+        </div>
     );
 }

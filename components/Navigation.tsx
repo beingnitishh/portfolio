@@ -1,14 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-
-const NAV_LINKS = [
-  { label: "Skills", id: "skills" },
-  { label: "Experience", id: "experience" },
-  { label: "Projects", id: "projects" },
-  { label: "Education", id: "education" },
-  { label: "Contact", id: "contact" },
-];
+import Link from "next/link";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { NAV_LINKS } from "@/lib/site-nav";
 
 const INSTAGRAM_URL = "https://www.instagram.com/oyee.nitishh/";
 
@@ -43,10 +37,22 @@ function CloseIcon() {
   );
 }
 
-export default function Navigation({ isVisible = true }: { isVisible?: boolean }) {
+type NavigationProps = {
+  isVisible?: boolean;
+  /** "home": in-page scroll buttons (homepage). "page": real links to /#section (subpages). */
+  mode?: "home" | "page";
+  /** Highlighted item in "page" mode. */
+  activeId?: string;
+};
+
+export default function Navigation({ isVisible = true, mode = "home", activeId = "" }: NavigationProps) {
+  const isPage = mode === "page";
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState<string>("");
+  // Subpages have no hero to scroll past, so the bar is always solid and the active item is fixed.
+  const barSolid = isPage || scrolled;
+  const currentId = isPage ? activeId : activeSection;
   const [igHovered, setIgHovered] = useState(false);
   const [igCardHovered, setIgCardHovered] = useState(false);
 
@@ -55,6 +61,7 @@ export default function Navigation({ isVisible = true }: { isVisible?: boolean }
 
   // ── Scroll handler ────────────────────────────────────────────────────────
   useEffect(() => {
+    if (isPage) return;
     const onScroll = () => {
       // Blur when the skills section reaches the navbar
       const skillsEl = document.getElementById("skills");
@@ -80,7 +87,7 @@ export default function Navigation({ isVisible = true }: { isVisible?: boolean }
 
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+  }, [isPage]);
 
   // Lock page scroll without changing position (fixed body jumps to the hero)
   useEffect(() => {
@@ -125,6 +132,50 @@ export default function Navigation({ isVisible = true }: { isVisible?: boolean }
     }
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
+
+  const logoStyle: CSSProperties = {
+    display: "flex",
+    alignItems: "center",
+    gap: "10px",
+    background: "none",
+    border: "none",
+    cursor: "pointer",
+    padding: 0,
+    minHeight: "44px",
+    textDecoration: "none",
+    color: "inherit",
+  };
+
+  const logoContent = (
+    <>
+      {/* Pulse dot */}
+      <span
+        className="nav-dot"
+        style={{
+          width: "7px",
+          height: "7px",
+          borderRadius: "50%",
+          background: "#FF5500",
+          flexShrink: 0,
+          animation: "nav-pulse 2s ease-in-out infinite",
+        }}
+      />
+      {/* Name */}
+      <span
+        style={{
+          fontFamily: "'Syne', sans-serif",
+          fontWeight: 800,
+          fontSize: "17px",
+          color: "#F5F5F5",
+          letterSpacing: "-0.03em",
+          lineHeight: 1,
+          whiteSpace: "nowrap",
+        }}
+      >
+        Nitish Kumar
+      </span>
+    </>
+  );
 
   return (
     <>
@@ -183,8 +234,35 @@ export default function Navigation({ isVisible = true }: { isVisible?: boolean }
           color: rgba(255,255,255,0.9);
         }
 
+        /* Larger touch target without changing the visual underline position */
+        .nav-link::before {
+          content: '';
+          position: absolute;
+          inset: -14px -10px;
+        }
+        .nav-link {
+          padding: 1px 6px 3px;
+        }
+
         @media (min-width: 480px) {
-          header { padding: 0 24px !important; }
+          header {
+            padding-left: max(24px, env(safe-area-inset-left)) !important;
+            padding-right: max(24px, env(safe-area-inset-right)) !important;
+          }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .nav-dot,
+          .mob-row {
+            animation: none !important;
+          }
+          .nav-link,
+          .nav-ig,
+          .mob-row,
+          .close-btn,
+          .hamburger-btn {
+            transition: none !important;
+          }
         }
 
         /* Mobile panel row hover */
@@ -208,61 +286,33 @@ export default function Navigation({ isVisible = true }: { isVisible?: boolean }
           left: 0,
           right: 0,
           zIndex: 1000,
-          height: "64px",
+          height: "calc(64px + env(safe-area-inset-top))",
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          padding: "0 16px",
           paddingTop: "env(safe-area-inset-top)",
-          background: scrolled ? "rgba(8,8,8,0.85)" : "transparent",
-          backdropFilter: scrolled ? "blur(16px)" : "none",
-          WebkitBackdropFilter: scrolled ? "blur(16px)" : "none",
-          borderBottom: scrolled ? "0.5px solid rgba(255,255,255,0.06)" : "none",
+          paddingBottom: 0,
+          paddingLeft: "max(16px, env(safe-area-inset-left))",
+          paddingRight: "max(16px, env(safe-area-inset-right))",
+          background: barSolid ? "rgba(8,8,8,0.85)" : "transparent",
+          backdropFilter: barSolid ? "blur(16px)" : "none",
+          WebkitBackdropFilter: barSolid ? "blur(16px)" : "none",
+          borderBottom: barSolid ? "0.5px solid rgba(255,255,255,0.06)" : "none",
           transition: "opacity 0.8s ease, background 0.3s ease, backdrop-filter 0.3s ease, border-color 0.3s ease",
           opacity: isVisible ? 1 : 0,
           pointerEvents: isVisible ? "auto" : "none",
         }}
       >
         {/* ── Logo ──────────────────────────────────────────────────────── */}
-        <button
-          onClick={handleLogoClick}
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "10px",
-            background: "none",
-            border: "none",
-            cursor: "pointer",
-            padding: 0,
-          }}
-          aria-label="Scroll to top"
-        >
-          {/* Pulse dot */}
-          <span
-            style={{
-              width: "7px",
-              height: "7px",
-              borderRadius: "50%",
-              background: "#FF5500",
-              flexShrink: 0,
-              animation: "nav-pulse 2s ease-in-out infinite",
-            }}
-          />
-          {/* Name */}
-          <span
-            style={{
-              fontFamily: "'Syne', sans-serif",
-              fontWeight: 800,
-              fontSize: "17px",
-              color: "#F5F5F5",
-              letterSpacing: "-0.03em",
-              lineHeight: 1,
-              whiteSpace: "nowrap",
-            }}
-          >
-            Nitish Kumar
-          </span>
-        </button>
+        {isPage ? (
+          <Link href="/" aria-label="Nitish Kumar, go to homepage" style={logoStyle}>
+            {logoContent}
+          </Link>
+        ) : (
+          <button onClick={handleLogoClick} style={logoStyle} aria-label="Scroll to top">
+            {logoContent}
+          </button>
+        )}
 
         {/* ── Desktop Nav (≥900px) — centered in the middle of the bar ──── */}
         <nav
@@ -278,16 +328,24 @@ export default function Navigation({ isVisible = true }: { isVisible?: boolean }
           className="desktop-nav"
         >
           {/* Links */}
-          {NAV_LINKS.map((link) => (
-            <button
-              key={link.id}
-              className={`nav-link${activeSection === link.id ? " active" : ""}`}
-              onClick={() => handleScrollTo(link.id)}
-              aria-current={activeSection === link.id ? "true" : undefined}
-            >
-              {link.label}
-            </button>
-          ))}
+          {NAV_LINKS.map((link) => {
+            const isActive = currentId === link.id;
+            const className = `nav-link${isActive ? " active" : ""}`;
+            return isPage ? (
+              <Link key={link.id} href={`/#${link.id}`} className={className} aria-current={isActive ? "true" : undefined}>
+                {link.label}
+              </Link>
+            ) : (
+              <button
+                key={link.id}
+                className={className}
+                onClick={() => handleScrollTo(link.id)}
+                aria-current={isActive ? "true" : undefined}
+              >
+                {link.label}
+              </button>
+            );
+          })}
         </nav>
 
         {/* ── Right zone: Instagram + Mobile Hamburger ─────────────────── */}
@@ -338,8 +396,9 @@ export default function Navigation({ isVisible = true }: { isVisible?: boolean }
               gap: "5px",
               alignItems: "center",
               justifyContent: "center",
-              width: "32px",
-              height: "32px",
+              width: "44px",
+              height: "44px",
+              margin: "0 -6px",
               pointerEvents: menuOpen ? "none" : "auto",
             }}
           >
@@ -420,8 +479,9 @@ export default function Navigation({ isVisible = true }: { isVisible?: boolean }
             onClick={closeMenu}
             aria-label="Close menu"
             style={{
-              width: "32px",
-              height: "32px",
+              width: "44px",
+              height: "44px",
+              margin: "0 -6px",
               borderRadius: "8px",
               border: "none",
               background: "transparent",
@@ -439,27 +499,24 @@ export default function Navigation({ isVisible = true }: { isVisible?: boolean }
         {/* ── Panel Nav Links ──────────────────────────────────────────── */}
         <div style={{ flex: 1, overflowY: "auto" }}>
           {NAV_LINKS.map((link, i) => {
-            const isActive = activeSection === link.id;
-            return (
-              <button
-                key={link.id}
-                className="mob-row"
-                onClick={() => handleScrollTo(link.id)}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  width: "100%",
-                  padding: "16px 24px",
-                  background: "transparent",
-                  border: "none",
-                  borderBottom: "0.5px solid rgba(255,255,255,0.04)",
-                  cursor: "pointer",
-                  animation: menuOpen
-                    ? `nav-item-in 0.35s cubic-bezier(0.4,0,0.2,1) ${i * 60}ms both`
-                    : "none",
-                  transition: "background 0.2s ease",
-                }}
-              >
+            const isActive = currentId === link.id;
+            const rowStyle: CSSProperties = {
+              display: "flex",
+              alignItems: "center",
+              width: "100%",
+              padding: "16px 24px",
+              background: "transparent",
+              border: "none",
+              borderBottom: "0.5px solid rgba(255,255,255,0.04)",
+              cursor: "pointer",
+              animation: menuOpen
+                ? `nav-item-in 0.35s cubic-bezier(0.4,0,0.2,1) ${i * 60}ms both`
+                : "none",
+              transition: "background 0.2s ease",
+              textDecoration: "none",
+            };
+            const rowContent = (
+              <>
                 {/* Index */}
                 <span
                   style={{
@@ -500,6 +557,27 @@ export default function Navigation({ isVisible = true }: { isVisible?: boolean }
                 >
                   →
                 </span>
+                </>
+            );
+            return isPage ? (
+              <Link
+                key={link.id}
+                href={`/#${link.id}`}
+                className="mob-row"
+                onClick={() => setMenuOpen(false)}
+                style={rowStyle}
+              >
+                {rowContent}
+              </Link>
+            ) : (
+              <button
+                key={link.id}
+                type="button"
+                className="mob-row"
+                onClick={() => handleScrollTo(link.id)}
+                style={rowStyle}
+              >
+                {rowContent}
               </button>
             );
           })}
@@ -603,6 +681,9 @@ export default function Navigation({ isVisible = true }: { isVisible?: boolean }
 
       {/* ── Responsive visibility styles ─────────────────────────────────── */}
       <style>{`
+        .nav-ig { position: relative; }
+        .nav-ig::before { content: ''; position: absolute; inset: -5px; }
+
         /* Desktop nav visible on ≥900px only */
         .desktop-nav { display: flex; }
         .nav-right { display: flex; }

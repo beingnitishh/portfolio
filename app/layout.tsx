@@ -118,7 +118,7 @@ export default function RootLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <html lang="en" className={inter.variable}>
+        <html lang="en" className={`${inter.variable} ${syne.variable} ${plex.variable}`}>
             <body className="bg-surface font-sans antialiased">
                 <Script
                     src="https://www.googletagmanager.com/gtag/js?id=G-EERF19N4J7"
