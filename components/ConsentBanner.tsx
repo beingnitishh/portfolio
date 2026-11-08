@@ -54,7 +54,7 @@ export default function ConsentBanner() {
     if (!isVisible) return null;
 
     return (
-        <div className="pointer-events-none fixed inset-x-0 bottom-0 z-[1000] flex justify-center p-3 sm:p-4">
+        <div className="pointer-events-none fixed inset-x-0 bottom-0 z-[1000] flex justify-center p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:p-4 sm:pb-[max(1rem,env(safe-area-inset-bottom))]">
             <motion.aside
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -70,14 +70,14 @@ export default function ConsentBanner() {
                     <button
                         type="button"
                         onClick={() => chooseConsent("granted")}
-                        className="min-h-10 rounded-md border border-white/15 bg-white/[0.04] px-4 py-2 text-xs font-medium text-white transition-colors hover:border-brand/70 hover:bg-brand/[0.08] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+                        className="min-h-11 rounded-md border border-white/15 bg-white/[0.04] px-4 py-2 text-xs font-medium text-white transition-colors hover:border-brand/70 hover:bg-brand/[0.08] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
                     >
                         Accept
                     </button>
                     <button
                         type="button"
                         onClick={() => chooseConsent("denied")}
-                        className="min-h-10 rounded-md border border-white/15 bg-white/[0.04] px-4 py-2 text-xs font-medium text-white transition-colors hover:border-brand/70 hover:bg-brand/[0.08] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+                        className="min-h-11 rounded-md border border-white/15 bg-white/[0.04] px-4 py-2 text-xs font-medium text-white transition-colors hover:border-brand/70 hover:bg-brand/[0.08] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
                     >
                         Decline
                     </button>

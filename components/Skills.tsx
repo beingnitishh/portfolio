@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
+import { LIVE_PROJECT_COUNT } from "@/lib/projects";
 
 // --- Custom Hook for CountUp ---
 function useCountUp(target: number, duration: number, startAnim: boolean) {
@@ -189,7 +190,7 @@ const STATS = [
   { value: "40+", label: "Total Skills" },
   { value: "7", label: "Domains" },
   { value: "1.5+", label: "Years Exp." },
-  { value: "3", label: "Live Projects" },
+  { value: String(LIVE_PROJECT_COUNT), label: "Live Projects" },
   { value: "3", label: "Certifications" },
 ];
 
