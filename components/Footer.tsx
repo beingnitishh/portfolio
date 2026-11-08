@@ -46,7 +46,7 @@ export default function Footer() {
                                 +91 8353932343
                             </a>
                             <p className="text-sm font-light text-white/25">
-                                Amroli, Surat, Gujarat
+                                Singanpore, Surat, Gujarat
                             </p>
                         </div>
                     </div>
