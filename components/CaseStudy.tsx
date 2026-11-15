@@ -2,6 +2,7 @@
 
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { AnimatePresence, MotionConfig, motion } from "framer-motion";
 import type { CasePanel, CaseTextSection, ProjectCase, ProjectCaseStudy } from "@/lib/projects";
 
@@ -559,35 +560,7 @@ function TechStack({ techStack, accent }: { techStack: ProjectCaseStudy["techSta
 /*  Screenshots + lightbox                                                    */
 /* -------------------------------------------------------------------------- */
 
-function ScreenshotPlaceholder({ caption, accent }: { caption: string; accent: string }) {
-    // Spans only: this sits inside a <button>, which allows phrasing content only.
-    return (
-        <span className="flex h-full w-full flex-col items-center justify-center gap-3 bg-[#101010] px-4 text-center">
-            <span
-                aria-hidden="true"
-                className="flex h-10 w-12 items-center justify-center rounded-md border border-dashed"
-                style={{ borderColor: `${accent}59`, color: accent }}
-            >
-                <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.3">
-                    <rect x="1.5" y="3" width="15" height="12" rx="1.5" />
-                    <circle cx="6" cy="7.5" r="1.4" />
-                    <path d="M2.5 13L7 9.5L10.5 12.5L13 10.5L15.5 13" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-            </span>
-            <span className="block">
-                <span className="block text-[11.5px] text-[#b3b3b3]" style={{ fontFamily: MONO }}>
-                    {caption}
-                </span>
-                <span className="mt-1 block text-[10px] uppercase tracking-[0.14em] text-[#5a5a5a]" style={{ fontFamily: MONO }}>
-                    Screenshot coming soon
-                </span>
-            </span>
-        </span>
-    );
-}
-
 function Screenshots({ screenshots, accent }: { screenshots: Section<"screenshots">; accent: string }) {
-    const [failed, setFailed] = useState<Record<string, boolean>>({});
     const [active, setActive] = useState<number | null>(null);
     const closeButtonRef = useRef<HTMLButtonElement>(null);
 
@@ -608,9 +581,7 @@ function Screenshots({ screenshots, accent }: { screenshots: Section<"screenshot
         };
     }, [active, close]);
 
-    const markFailed = (src: string) => setFailed((prev) => ({ ...prev, [src]: true }));
     const activeShot = active !== null ? screenshots.items[active] : null;
-    const activeFailed = activeShot ? failed[activeShot.src] : false;
 
     return (
         <div>
@@ -621,70 +592,57 @@ function Screenshots({ screenshots, accent }: { screenshots: Section<"screenshot
                 accent={accent}
             />
             <div className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-2 md:mt-10">
-                {screenshots.items.map((shot, index) => {
-                    const isFailed = Boolean(failed[shot.src]);
-                    return (
-                        <motion.figure
-                            key={shot.src}
-                            initial={{ opacity: 0, y: 16 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true, amount: 0.2 }}
-                            transition={{ duration: 0.45, delay: (index % 2) * 0.07, ease: "easeOut" }}
-                            className="group overflow-hidden rounded-[14px] border-[0.5px] border-[#333] bg-[#121212] transition-colors duration-300 hover:border-[var(--shot-accent)]"
-                            style={{ "--shot-accent": `${accent}80` } as React.CSSProperties}
+                {screenshots.items.map((shot, index) => (
+                    <motion.figure
+                        key={shot.src}
+                        initial={{ opacity: 0, y: 16 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true, amount: 0.2 }}
+                        transition={{ duration: 0.45, delay: (index % 2) * 0.07, ease: "easeOut" }}
+                        className="group overflow-hidden rounded-[14px] border-[0.5px] border-[#333] bg-[#121212] transition-colors duration-300 hover:border-[var(--shot-accent)]"
+                        style={{ "--shot-accent": `${accent}80` } as React.CSSProperties}
+                    >
+                        <button
+                            type="button"
+                            onClick={() => setActive(index)}
+                            aria-label={`Open ${shot.caption} screenshot`}
+                            className="relative block aspect-[16/10] w-full overflow-hidden focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px]"
+                            style={{ outlineColor: accent, backgroundColor: "#0d0d0d" }}
                         >
-                            <button
-                                type="button"
-                                onClick={() => !isFailed && setActive(index)}
-                                disabled={isFailed}
-                                aria-label={isFailed ? `${shot.caption} screenshot is not available yet` : `Open ${shot.caption} screenshot`}
-                                className="relative block aspect-[16/10] w-full overflow-hidden focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] disabled:cursor-default"
-                                style={{ outlineColor: accent, backgroundColor: "#0d0d0d" }}
+                            <Image
+                                src={shot.src}
+                                alt={shot.alt}
+                                fill
+                                sizes="(max-width: 640px) 100vw, (max-width: 1100px) 50vw, 550px"
+                                className="object-cover transition-transform duration-500 group-hover:scale-[1.02]"
+                            />
+                            <span
+                                aria-hidden="true"
+                                className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                                style={{ background: `linear-gradient(to top, ${accent}26, transparent 55%)` }}
+                            />
+                            <span
+                                aria-hidden="true"
+                                className="absolute right-3 top-3 rounded-full border border-white/15 bg-black/50 px-2 pb-[3px] pt-1 text-[9px] uppercase tracking-[0.14em] text-white/80 opacity-0 backdrop-blur transition-opacity duration-300 group-hover:opacity-100"
+                                style={{ fontFamily: MONO }}
                             >
-                                {isFailed ? (
-                                    <ScreenshotPlaceholder caption={shot.caption} accent={accent} />
-                                ) : (
-                                    <>
-                                        {/* Plain img so a missing file degrades to the placeholder instead of failing the build. */}
-                                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                                        <img
-                                            src={shot.src}
-                                            alt={shot.alt}
-                                            loading="lazy"
-                                            decoding="async"
-                                            onError={() => markFailed(shot.src)}
-                                            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.02]"
-                                        />
-                                        <span
-                                            aria-hidden="true"
-                                            className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-                                            style={{ background: `linear-gradient(to top, ${accent}26, transparent 55%)` }}
-                                        />
-                                        <span
-                                            aria-hidden="true"
-                                            className="absolute right-3 top-3 rounded-full border border-white/15 bg-black/50 px-2 pb-[3px] pt-1 text-[9px] uppercase tracking-[0.14em] text-white/80 opacity-0 backdrop-blur transition-opacity duration-300 group-hover:opacity-100"
-                                            style={{ fontFamily: MONO }}
-                                        >
-                                            View
-                                        </span>
-                                    </>
-                                )}
-                            </button>
-                            <figcaption className="flex items-center justify-between gap-3 border-t border-white/5 px-3.5 py-2.5">
-                                <span className="text-[11px] text-[#a0a0a0]" style={{ fontFamily: MONO }}>
-                                    {shot.caption}
-                                </span>
-                                <span className="text-[9px] uppercase tracking-[0.14em] text-[#5a5a5a]" style={{ fontFamily: MONO }}>
-                                    {String(index + 1).padStart(2, "0")} / {String(screenshots.items.length).padStart(2, "0")}
-                                </span>
-                            </figcaption>
-                        </motion.figure>
-                    );
-                })}
+                                View
+                            </span>
+                        </button>
+                        <figcaption className="flex items-center justify-between gap-3 border-t border-white/5 px-3.5 py-2.5">
+                            <span className="text-[11px] text-[#a0a0a0]" style={{ fontFamily: MONO }}>
+                                {shot.caption}
+                            </span>
+                            <span className="text-[9px] uppercase tracking-[0.14em] text-[#5a5a5a]" style={{ fontFamily: MONO }}>
+                                {String(index + 1).padStart(2, "0")} / {String(screenshots.items.length).padStart(2, "0")}
+                            </span>
+                        </figcaption>
+                    </motion.figure>
+                ))}
             </div>
 
             <AnimatePresence>
-                {activeShot && !activeFailed && (
+                {activeShot && (
                     <motion.div
                         key="lightbox"
                         role="dialog"
@@ -716,12 +674,13 @@ function Screenshots({ screenshots, accent }: { screenshots: Section<"screenshot
                                 Close
                                 <span aria-hidden="true">✕</span>
                             </button>
-                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img
+                            <Image
                                 src={activeShot.src}
                                 alt={activeShot.alt}
-                                className="max-h-[78vh] w-full rounded-lg border border-white/10 object-contain"
-                                onError={() => markFailed(activeShot.src)}
+                                width={1590}
+                                height={770}
+                                sizes="(max-width: 1100px) 100vw, 1024px"
+                                className="h-auto max-h-[78vh] w-full rounded-lg border border-white/10 object-contain"
                             />
                             <p
                                 className="mt-3 text-center text-[11px] uppercase tracking-[0.14em] text-white/50"

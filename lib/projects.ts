@@ -437,23 +437,23 @@ export const PROJECTS: ProjectCase[] = [
                 intro: "A look at the working app. Click any frame to view it larger.",
                 items: [
                     {
-                        src: "/projects/starstock/dashboard.jpg",
-                        alt: "StarStock dashboard showing catalogue totals and stock levels",
+                        src: "/projects/starstock/dashboard.png",
+                        alt: "StarStock dashboard showing 491 SKUs, stock on hand across three warehouses, recent activity and low stock alerts",
                         caption: "Dashboard",
                     },
                     {
-                        src: "/projects/starstock/inventory.jpg",
-                        alt: "StarStock inventory table listing products by SKU and warehouse",
+                        src: "/projects/starstock/inventory.png",
+                        alt: "StarStock inventory table listing products by SKU with carton quantities and stock levels per warehouse",
                         caption: "Inventory",
                     },
                     {
-                        src: "/projects/starstock/transactions.jpg",
-                        alt: "StarStock transaction history with the newest stock movements first",
+                        src: "/projects/starstock/transactions.png",
+                        alt: "StarStock transaction history listing outbound stock movements newest first, with date, type, product, warehouse and stock after",
                         caption: "Transactions",
                     },
                     {
-                        src: "/projects/starstock/ai-chat.jpg",
-                        alt: "An AI assistant answering a low-stock question through the StarStock MCP server",
+                        src: "/projects/starstock/ai-chat.png",
+                        alt: "A ChatGPT conversation answering a StarStock stock movement question through the MCP connector",
                         caption: "AI chat",
                     },
                 ],
